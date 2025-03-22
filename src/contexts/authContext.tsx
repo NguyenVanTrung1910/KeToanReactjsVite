@@ -42,11 +42,6 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 			return null;
 		}
 	}
-
-
-
-
-	//ok la
 	useEffect(() => {
 		localStorage.setItem('facit_authUsername', user);
 		GetMenu().then((data) => {
