@@ -36,12 +36,14 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 	const menus = useRef<MenuItem>(JSON.parse(localStorage.getItem("menus") || '{}'));
 	async function GetMenu(): Promise<MenuItem | null> {
 		try {
-			const response = await api.get<MenuItem>("/menu/GetMenu"); // Xác định kiểu dữ liệu
+			const response = await api.get<MenuItem>("/menu/GetMenu");
 			return response.data;
 		} catch (error) {
 			return null;
 		}
 	}
+
+	
 	useEffect(() => {
 		localStorage.setItem('facit_authUsername', user);
 		GetMenu().then((data) => {
