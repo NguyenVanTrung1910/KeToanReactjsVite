@@ -16,7 +16,7 @@ import ScrollableTabs from '../../_layout/_headers/ScrollableTabs';
 import Carousels from '../../../components/bootstrap/Carousel'
 import DataTable from "../../../components/table/DataTable";
 import api from "../../../Api/api";
-import GetDataForTable from '../../../components/table/GetDataForTable';
+import GetDataForTable from '../../../components/table/DataGrid';
 const HomePage = () => {
     const { mobileDesign } = useContext(ThemeContext);
 	/**

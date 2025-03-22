@@ -1,6 +1,6 @@
 import api from "../../Api/api";
 import React, { useEffect, useState } from 'react';
-import DataTable from "../../components/table/DataTable";
+import DataTable from "./DataTable";
 
 interface TitleColTable {
     TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string;RULES?: string
@@ -10,7 +10,7 @@ interface GetDataProps {
     apiUrlGetTitle: string;
     loai: string;
   }
-const GetDataForTable: React.FC<GetDataProps> =  ({apiUrlForAll,apiUrlGetTitle,loai}) => {
+const DataGrid: React.FC<GetDataProps> =  ({apiUrlForAll,apiUrlGetTitle,loai}) => {
     async function GetTitle(): Promise< TitleColTable[]> {
         try {
           const response = await api.get<TitleColTable[]>(apiUrlGetTitle);
@@ -31,4 +31,4 @@ const GetDataForTable: React.FC<GetDataProps> =  ({apiUrlForAll,apiUrlGetTitle,l
     }, []);
     return <DataTable url={apiUrlForAll} keyField="ID" columns={columnss} pageSize={10} loai={loai}/>;
 };
-export default GetDataForTable;
+export default DataGrid;

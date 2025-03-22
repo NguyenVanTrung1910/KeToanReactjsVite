@@ -22,7 +22,7 @@ import {
 } from "devextreme-react/data-grid";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import { DataType } from "devextreme/ui/data_grid";
-import { truncate } from "fs";
+import { cp, truncate } from "fs";
 interface CustomDataGridProps {
   url: string;
   keyField: string;
@@ -32,7 +32,7 @@ interface CustomDataGridProps {
   loai: string;
 }
 interface TitleColTable {
-  TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; RULES?: string
+  TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; RULES?: string, HIENTHI?:number,
 }
 type RuleType = "RequiredRule" | "RangeRule" | "StringLengthRule";
 
@@ -89,7 +89,6 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
       <Paging enabled={true} defaultPageSize={pageSize} />
       <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10, 20]} showInfo={true} />
 
-      {/* Cột STT */}
       <Column
         caption="STT"
         width={70}
@@ -98,33 +97,35 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
 
       {/* Các cột động */}
       {columns
-        .filter(col => !displayCol || displayCol.includes(col.TENTRUONG)) // Chỉ hiển thị cột hợp lệ
-        .map((col) => (
-          <Column
-            key={col.TENTRUONG}
-            dataField={col.TENTRUONG}
-            caption={col.TENCOT}
-            dataType={col.KIEUDULIEU as DataType}
-            alignment={col.KIEUDULIEU === "number" ? "left" : undefined}
-          >
-            {col.LOOKUPURL !=='/' && (
-              <Lookup
-                dataSource={createStore({
-                  key: "Value",
-                  loadUrl: col.LOOKUPURL,
-                  onBeforeSend: (method, ajaxOptions) => {
-                    ajaxOptions.xhrFields = { withCredentials: true };
-                  },
-                })}
-                valueExpr="Value"
-                displayExpr="Text"
-              />
-            )}
-            {parseRules(col.RULES)}
-          </Column>
-        ))
-      }
+        .filter(col => !displayCol || displayCol.includes(col.TENTRUONG)) // Lọc cột hiển thị
+        .map((col) => {
+          if (col.HIENTHI === 0) return null; // Bỏ qua cột không hiển thị
 
+          return (
+            <Column
+              key={col.TENTRUONG}
+              dataField={col.TENTRUONG}
+              caption={col.TENCOT}
+              dataType={col.KIEUDULIEU as DataType}
+              alignment={col.KIEUDULIEU === "number" ? "left" : undefined}
+            >
+              {col.LOOKUPURL !== "/" && (
+                <Lookup
+                  dataSource={createStore({
+                    key: "Value",
+                    loadUrl: col.LOOKUPURL,
+                    onBeforeSend: (method, ajaxOptions) => {
+                      ajaxOptions.xhrFields = { withCredentials: true };
+                    },
+                  })}
+                  valueExpr="Value"
+                  displayExpr="Text"
+                />
+              )}
+              {parseRules(col.RULES)}
+            </Column>
+          );
+        })}
       {/* Các thành phần UI khác */}
       <FilterRow visible />
       <HeaderFilter visible />

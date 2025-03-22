@@ -1,6 +1,7 @@
 import React, { createContext, FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { getUserDataWithUsername, IUserProps } from '../common/data/userDummyData';
 import api from "../Api/api";
+import { MenuItem } from '@mui/material';
 export interface IAuthContextProps {
 	user: string;
 	setUser?(...args: unknown[]): unknown;
@@ -50,8 +51,6 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 				localStorage.setItem("menus", JSON.stringify(menus.current));
 			}
 		});
-
-
 	}, [user]);
 
 	useEffect(() => {

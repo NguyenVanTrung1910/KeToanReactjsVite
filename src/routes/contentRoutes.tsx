@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy,useContext } from 'react';
 import { RouteProps } from 'react-router-dom';
 import {
 	componentPagesMenu,
@@ -8,13 +8,17 @@ import {
 	pageLayoutTypesPagesMenu,
 } from '../menu';
 import Login from '../pages/presentation/auth/Login';
+import AuthContext from '../contexts/authContext';
+
 
 const LANDING = {
 	DASHBOARD: lazy(() => import('../pages/presentation/dashboard/DashboardPage')),
 	HOMEPAGE: lazy(() => import('../pages/presentation/dashboard/HomePage')),
 
 };
-
+const DANHMUC = {
+	DOITUONG_NHOMDOITUONG: lazy(() => import('../pages/danhmuc/DoiTuong/NhomDoiTuong')),
+};
 
 
 const AUTH = {
@@ -28,9 +32,6 @@ const PAGE_LAYOUTS = {
 
 
 const presentation: RouteProps[] = [
-	/**
-	 * Landing
-	 */
 	{
 		path: dashboardPagesMenu.dashboard.path,
 		element: <LANDING.DASHBOARD />,
@@ -59,6 +60,13 @@ const presentation: RouteProps[] = [
 	{
 		path: demoPagesMenu.signUp.path,
 		element: <Login isSignUp />,
+	},
+
+	//Danh muc
+
+	{
+		path: '/danhmuc/danhmuc/loai=DANHMUCNHOMDONVI',
+		element: <DANHMUC.DOITUONG_NHOMDOITUONG namController='danhmuc' nameAction='danhmuc' loai='NOIDUNGCHUNGTU'/>,
 	},
 ];
 
