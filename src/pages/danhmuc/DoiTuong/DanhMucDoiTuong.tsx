@@ -6,7 +6,7 @@ import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import Page from '../../../layout/Page/Page';
 import ThemeContext from '../../../contexts/themeContext';
 import DataGrid from '../../../components/table/DataGrid';
-const NhomDoiTuong = () => {
+const DanhMucDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
     useEffect(() => {
@@ -26,8 +26,8 @@ const NhomDoiTuong = () => {
                     <div className='col-xxl-12'>
                         <DataGrid
                             apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
-                            apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmucnhomdonvi`}
-                            loai='danhmucnhomdonvi' />
+                            apiUrlGetTitle={`/danhmuc/danhmuc?loai=noidungchungtu`}
+                            loai='noidungchungtu' />
                     </div>
 
                 </div>
@@ -37,4 +37,4 @@ const NhomDoiTuong = () => {
     );
 };
 
-export default NhomDoiTuong;
+export default DanhMucDoiTuong;
