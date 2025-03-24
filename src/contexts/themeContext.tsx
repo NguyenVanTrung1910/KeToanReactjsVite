@@ -50,7 +50,7 @@ export const ThemeContextProvider: FC<IThemeContextProviderProps> = ({ children 
 	const [tabs, setTabs] = useState<TapItem>(	{
 		dashboard: {
 		id: 'dashboard',
-		text: 'Dashboard',
+		text: 'Trang Chủ',
 		path: '/',
 		icon: 'Dashboard',
 		subMenu: null,

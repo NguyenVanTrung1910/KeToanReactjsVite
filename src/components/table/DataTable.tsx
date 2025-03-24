@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import 'devextreme/data/odata/store';
 import {
   Column,
+  Button,
   DataGrid,
   FilterRow,
   HeaderFilter,
@@ -32,7 +33,7 @@ interface CustomDataGridProps {
   loai: string;
 }
 interface TitleColTable {
-  TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; RULES?: string, HIENTHI?:number,
+  TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; RULES?: string, HIENTHI?: number,
 }
 type RuleType = "RequiredRule" | "RangeRule" | "StringLengthRule";
 
@@ -46,13 +47,14 @@ interface Rule {
   type: RuleType;
   props?: RuleProps;
 }
-const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, pageSize = 10, displayCol,loai }) => {
+const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, pageSize = 10, displayCol, loai }) => {
   const dataSource = createStore({
     key: keyField,
     loadUrl: `${url}/GetDataForTable?loai=${loai}`,
     insertUrl: `${url}/InsertOrder`,
     updateUrl: `${url}/UpdateOrder`,
     deleteUrl: `${url}/DeleteOrder`,
+
     // paginate: true,
     onBeforeSend: (method, ajaxOptions) => {
       ajaxOptions.xhrFields = { withCredentials: true };
@@ -82,25 +84,64 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
       return [];
     }
   };
+  const [selectedId, setSelectedId] = useState(null);
+
+  const handleEditClick = (e: any) => {
+    const rowID = e.row.data.ID;
+    console.log("ID cần sửa:", rowID);
+    setSelectedId(rowID);
+    // Mở modal ở đây
+  };
+
+  const handleDeleteClick = (e: any) => {
+    const rowID = e.row.data.ID;
+    console.log("ID cần xóa:", rowID);
+    // Gọi API xóa nếu cần
+  };
   return (
-    <DataGrid dataSource={dataSource} showBorders height={600} remoteOperations={true}  columnAutoWidth={true}  // Đặt cột tự động căn chỉnh độ rộng
-    columnMinWidth={100}>
-      {/* Phân trang */}
+    <DataGrid dataSource={dataSource} showBorders height={600} remoteOperations={true} columnAutoWidth={true}  // Đặt cột tự động căn chỉnh độ rộng
+      // columnMinWidth={90}
+      groupPanel={{
+        visible: true,
+        emptyPanelText: "Nhóm dữ liệu bằng cách kéo cột vào đây!"
+      }}
+
+      onEditingStart={(e) => {
+        console.log("Sửa hàng có ID:", e.data.ID);
+      }}
+      onRowRemoving={(e) => {
+        console.log("Xóa hàng có ID:", e.data.ID);
+      }}
+
+    >
       <Paging enabled={true} defaultPageSize={pageSize} />
       <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10, 20]} showInfo={true} />
-
       <Column
         caption="STT"
-        width={70}
+        width={60}
         cellRender={(data) => <span>{data.component.pageIndex() * data.component.pageSize() + data.rowIndex + 1}</span>}
       />
-
-      {/* Các cột động */}
       {columns
         .filter(col => !displayCol || displayCol.includes(col.TENTRUONG)) // Lọc cột hiển thị
         .map((col) => {
           if (col.HIENTHI === 0) return null; // Bỏ qua cột không hiển thị
-
+          if (col.TENTRUONG === 'SUAXOA') {
+            return (
+              <Column type="buttons" width={90} caption={col.TENCOT} alignment='left' buttons={[
+                {
+                  hint: "Sửa",
+                  icon: "edit",
+                  onClick: handleEditClick,
+                },
+                {
+                  hint: "Xóa",
+                  icon: "trash",
+                  onClick: handleDeleteClick,
+                },
+              ]}>
+              </Column>
+            )
+          }
           return (
             <Column
               key={col.TENTRUONG}
@@ -131,10 +172,11 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
       <HeaderFilter visible />
       <GroupPanel visible />
       <Scrolling mode="standard" />
-      <Editing mode="row" allowAdding allowDeleting allowUpdating />
       <Grouping autoExpandAll={false} />
+      {columns.some(col => col.TENTRUONG === 'SUAXOA') &&
+        <Editing allowDeleting allowUpdating />
 
-      {/* Tóm tắt */}
+      }
     </DataGrid>
   );
 };

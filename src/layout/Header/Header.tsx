@@ -25,7 +25,7 @@ export const HeaderRight: FC<IHeaderRightProps> = ({ children, className }) => {
 	root.style.setProperty('--header-right-height', `${height}px`);
 
 	return (
-		<div ref={ref} className={classNames('header-right', 'col-md-auto', className)}>
+		<div ref={ref} className={classNames('header-right', 'col-md-auto', className)} style={{marginTop:'3px'}}>
 			{children}
 		</div>
 	);

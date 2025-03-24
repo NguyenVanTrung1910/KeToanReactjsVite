@@ -126,7 +126,9 @@ const User = () => {
 							className='navigation-item cursor-pointer'
 							onClick={() => {
 								if (setUser) {
+									localStorage.removeItem("menus");
 									setUser('');
+
 								}
 								if (width < Number(import.meta.env.VITE_MOBILE_BREAKPOINT_SIZE)) {
 									setAsideStatus(false);

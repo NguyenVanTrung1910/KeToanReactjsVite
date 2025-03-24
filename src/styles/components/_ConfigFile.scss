@@ -91,11 +91,12 @@ $header: (
 
 $subheader: (
 	height: 4rem,
-	background-color: $white,
-	dark-background-color: shade-color($dark-body-bg, 70%),
+	// background-color: $white,
+	background-color: rgb(229 229 229 / 80%),
+	dark-background-color: shade-color($dark-body-bg, 20%),
 	color: $body-color,
 	color-dark: $dark,
-	opacity: 0.5,
+	opacity: 0.8,
 	blur: 0.5rem,
 	border-size: 1px,
 	border-color: $gray-100,

@@ -45,12 +45,15 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 	}
 	useEffect(() => {
 		localStorage.setItem('facit_authUsername', user);
-		GetMenu().then((data) => {
-			if (data) {
-				menus.current = data;
-				localStorage.setItem("menus", JSON.stringify(menus.current));
-			}
-		});
+		if (localStorage.getItem("menus") !== null) {
+			GetMenu().then((data) => {
+				if (data) {
+					menus.current = data;
+					localStorage.setItem("menus", JSON.stringify(menus.current));
+				}
+			});
+		}
+
 	}, [user]);
 
 	useEffect(() => {

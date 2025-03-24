@@ -41,7 +41,6 @@ const HomePage = () => {
                         <div className='col-xxl-12'>
                             <GetDataForTable apiUrlForAll='https://localhost:44336/api/danhmuc' apiUrlGetTitle='/danhmuc/GetAllItem?loai=NOIDUNGCHUNGTU' loai='NOIDUNGCHUNGTU'/>
                         </div>
-                    
                     </div>
                 </Page>
             </PageWrapper>
