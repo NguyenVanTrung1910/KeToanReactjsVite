@@ -17,7 +17,7 @@ import ThemeContext from '../../contexts/themeContext';
 const User = () => {
 	const { width } = useWindowSize();
 	const { setAsideStatus } = useContext(ThemeContext);
-	const { userData, setUser } = useContext(AuthContext);
+	const { userData, setUser, menus } = useContext(AuthContext);
 
 	const navigate = useNavigate();
 	const handleItem = useNavigationItemHandle();
@@ -126,7 +126,9 @@ const User = () => {
 							className='navigation-item cursor-pointer'
 							onClick={() => {
 								if (setUser) {
+									localStorage.removeItem("menus");
 									setUser('');
+									
 								}
 								if (width < Number(import.meta.env.VITE_MOBILE_BREAKPOINT_SIZE)) {
 									setAsideStatus(false);
