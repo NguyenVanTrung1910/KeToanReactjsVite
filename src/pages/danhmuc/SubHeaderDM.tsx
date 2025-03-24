@@ -13,7 +13,7 @@ interface SubProps {
     link2: string;
     listButton?: ReactNode;
 }
-const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1 }) => {
+const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1,listButton }) => {
     return (
         <SubHeader>
             <SubHeaderLeft>
@@ -31,7 +31,7 @@ const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1 }) => {
                 />
             </SubHeaderLeft>
             <SubHeaderRight>
-                
+                {listButton}
                 <Button className='btn btn-outline-info border-transparent btn-hover-shadow-lg shadow-none'>Xuất Excel</Button>
             </SubHeaderRight>
         </SubHeader>

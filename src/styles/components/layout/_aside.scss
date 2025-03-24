@@ -109,6 +109,7 @@
 			);
 			border-radius: 0.5rem;
 			content: '';
+			display: none;
 		}
 	}
 }
@@ -127,6 +128,7 @@
 	border-radius: $border-radius;
 	box-shadow: $box-shadow-lg;
 	cursor: pointer;
+	display: none;
 }
 
 .aside-drag-area {
@@ -146,7 +148,8 @@
 		@if map-deep-get($aside, shadow) {
 			@include box-shadow($modern-design-shadow);
 		}
-
+		//trung custome
+		box-shadow: 0 0.3rem 2rem 6px rgb(0 0 0 / 20%);
 		overflow: hidden;
 	}
 }

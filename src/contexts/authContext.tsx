@@ -45,7 +45,8 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 	}
 	useEffect(() => {
 		localStorage.setItem('facit_authUsername', user);
-		if (localStorage.getItem("menus") !== null) {
+		console.log(1);
+		if (localStorage.getItem("menus") === null) {
 			GetMenu().then((data) => {
 				if (data) {
 					menus.current = data;

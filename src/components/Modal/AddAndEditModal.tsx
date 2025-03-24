@@ -13,12 +13,12 @@ interface ModelProps {
     nameButton: string;
     content: ReactNode;
     title: string;
+    isOpen: boolean; // ✅ Nhận trạng thái từ component cha
+    setIsOpen: (value: boolean) => void; // ✅ Nhận hàm set trạng thái từ component cha
 }
 
 
-const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title }) => {
-    const [state, setState] = useState(false);
-
+const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title, isOpen, setIsOpen }) => {
     const [staticBackdropStatus, setStaticBackdropStatus] = useState(false);
     const [scrollableStatus, setScrollableStatus] = useState(false);
     const [centeredStatus, setCenteredStatus] = useState(false);
@@ -52,14 +52,13 @@ const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title }) =
                     setAnimationStatus(false);
                     setCenteredStatus(true);
                     setSizeStatus('lg');
-                    setState(true);
-                    setState(true);
+                    setIsOpen(true)
                 }}>
                 {nameButton}
             </Button>
             <Modal
-                isOpen={state}
-                setIsOpen={setState}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
                 titleId='exampleModalLabel'
                 isStaticBackdrop={staticBackdropStatus}
                 isScrollable={scrollableStatus}
@@ -67,7 +66,7 @@ const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title }) =
                 size={sizeStatus}
                 fullScreen={fullScreenStatus}
                 isAnimation={animationStatus}>
-                <ModalHeader setIsOpen={headerCloseStatus ? setState : undefined}>
+                <ModalHeader setIsOpen={headerCloseStatus ? setIsOpen : undefined}>
                     <ModalTitle id='exampleModalLabel'>{title}</ModalTitle>
                 </ModalHeader>
                 <ModalBody>{content}</ModalBody>
@@ -79,10 +78,10 @@ const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title }) =
                         Thêm tiếp
                     </Button>
                     <Button
-                        color='info'
-                        isOutline
-                        className='border-0'
-                        onClick={() => setState(false)}>
+                        color='danger'
+                        //isOutline
+                        className='border'
+                        onClick={() => setIsOpen(false)}>
                         Đóng
                     </Button>
 
