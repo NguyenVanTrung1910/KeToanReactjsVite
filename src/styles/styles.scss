@@ -10,8 +10,13 @@
 @import 'components/index';
 @import 'vendors/index';
 @import 'utilities/index';
-
+// @import 'react-notifications-component/dist/theme.css';
 // Utilities
 @import 'node_modules/bootstrap/scss/utilities/api';
 
 @import 'custom/index';
+// preferred way to import (from `v4`). Uses `animate__` prefix.
+// @import 'animate.css/animate.min.css';
+
+// // Alternate way to use classes without prefix like `animated fadeIn`
+// @import 'animate.css/animate.compat.css'

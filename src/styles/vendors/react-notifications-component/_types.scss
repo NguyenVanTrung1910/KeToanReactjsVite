@@ -4,7 +4,7 @@
 	.rnc__notification-item--#{$type} {
 		@include backdrop-filter-blur(0.7rem);
 
-		background-color: rgba(shade-color($value, 5%), 0.65);
+		background-color: rgba(shade-color($value, 30%), 1);
 
 		.rnc__notification-timer {
 			background-color: $value;

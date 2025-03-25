@@ -25,6 +25,7 @@ import { createStore } from "devextreme-aspnet-data-nojquery";
 import { DataType } from "devextreme/ui/data_grid";
 import { cp, truncate } from "fs";
 import AddAndEditModal from "../Modal/AddAndEditModal";
+import Api from "../../Api/api";
 interface CustomDataGridProps {
   url: string;
   keyField: string;
@@ -102,8 +103,26 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
 
   const handleDeleteClick = (e: any) => {
     const rowID = e.row.data.ID;
-    console.log("ID cần xóa:", rowID);
-    setidItem(rowID)
+    const deleteData = async () => {
+      try {
+        const response = await Api.delete(`${url}/XoaDong`, {
+          params: {
+            TenBang: loai,
+            IDcmd: rowID
+          }
+        });
+
+        if (response.status === 200) {
+          console.log("Xóa thành công:", response.data);
+          // Có thể cập nhật lại danh sách sau khi xóa
+        } else {
+          console.error("Lỗi khi xóa:", response.data);
+        }
+      } catch (error) {
+        console.error("Lỗi trong quá trình gọi API:", error);
+      }
+    };
+    deleteData()
 
     // Gọi API xóa nếu cần
   };

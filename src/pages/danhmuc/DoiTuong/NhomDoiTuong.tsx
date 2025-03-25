@@ -27,10 +27,10 @@ const NhomDoiTuong = () => {
             <Page container='fluid'>
                 <div className='row'>
                     <div className='col-xxl-12'>
-                        <DataGrid
+                        {/* <DataGrid
                             apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmucnhomdonvi`}
-                            loai='danhmucnhomdonvi' />
+                            loai='danhmucnhomdonvi' /> */}
                     </div>
 
                 </div>

@@ -15,6 +15,8 @@ import Button, { ButtonGroup } from '../../../components/bootstrap/Button';
 import Breadcrumb from '../../../components/bootstrap/Breadcrumb';
 import AddAndEditModal from '../../../components/Modal/AddAndEditModal';
 import SubHeaderDM from '../SubHeaderDM';
+import { Store } from 'react-notifications-component';
+import showNotification from '../../../components/extras/showNotification';
 
 const DanhMucDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
@@ -28,6 +30,33 @@ const DanhMucDoiTuong = () => {
         }
         return () => { };
     }, []);
+    Store.addNotification({
+        title: "Wonderful!",
+        message: "teodosii@react-notifications-component",
+        type: "success",
+        insert: "top",
+        container: "top-right",
+        // animationIn: ["animate__animated", "animate__fadeIn"],
+        // animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+            duration: 5000,
+            onScreen: true
+        }
+    });
+    Store.removeNotification('2');
+    // notification = {
+    //     title: "Wonderful!",
+    //     message: "Configurable",
+    //     type: "success",
+    //     insert: "top",
+    //     container: "top-right",
+    //     animationIn: ["animate__animated animate__fadeIn"], // `animate.css v4` classes
+    //     animationOut: ["animate__animated animate__fadeOut"] // `animate.css v4` classes
+    // };
+    // Store.addNotification({
+    //     ...notification,
+    //     container: 'top-right'
+    // })
 
     return (
         // <KeepAlive>
@@ -41,7 +70,44 @@ const DanhMucDoiTuong = () => {
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmuctendonvi`}
                             loai='danhmuctendonvi' /> */}
                     </div>
-
+                    <Button
+                        color='primary'
+                        isLight
+                        icon='Notifications'
+                        onClick={() => {
+                            showNotification('', "trung dx sada asdas ad asda a asda ad a ada ad adasd");
+                        }}>
+                        Click
+                    </Button>
+                    <Button
+                        color='success'
+                        isLight
+                        icon='Notifications'
+                        onClick={() => {
+                            showNotification('', 'sádasdasdsa', 'success');
+                        }}>
+                        Success
+                    </Button>
+                    <Button
+                        color='danger'
+                        isLight
+                        icon='Notifications'
+                        onClick={() => {
+                            showNotification('', 'askjdsajk  asdhkas daskjd haskdasdkjasdhsakjdh ', 'danger');
+                        }}>
+                        Danger
+                    </Button>
+                    <div className='col-auto'>
+                        <Button
+                            color='warning'
+                            isLight
+                            icon='Notifications'
+                            onClick={() => {
+                                showNotification('', 'asjkdsahjkdhbaskjd asasd haskjdh ákdhska', 'warning');
+                            }}>
+                            Warning
+                        </Button>
+                    </div>
 
                 </div>
             </Page>
