@@ -13,49 +13,52 @@ interface ModelProps {
     nameButton: string;
     content: ReactNode;
     title: string;
-    isOpen: boolean; // ✅ Nhận trạng thái từ component cha
-    setIsOpen: (value: boolean) => void; // ✅ Nhận hàm set trạng thái từ component cha
+    isOpen: boolean;
+    setIsOpen: (value: boolean) => void;
+    includeButton: boolean;
 }
 
 
-const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title, isOpen, setIsOpen }) => {
+const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title, isOpen, setIsOpen, includeButton }) => {
     const [staticBackdropStatus, setStaticBackdropStatus] = useState(false);
     const [scrollableStatus, setScrollableStatus] = useState(false);
-    const [centeredStatus, setCenteredStatus] = useState(false);
-    const [sizeStatus, setSizeStatus] = useState<TModalSize>(null);
+    const [centeredStatus, setCenteredStatus] = useState(true);
+    const [sizeStatus, setSizeStatus] = useState<TModalSize>('lg');
     const [fullScreenStatus, setFullScreenStatus] = useState<TModalFullScreen | undefined>(
         undefined,
     );
-    const [animationStatus, setAnimationStatus] = useState(true);
+    const [animationStatus, setAnimationStatus] = useState(false);
     const [longContentStatus, setLongContentStatus] = useState(false);
     const [headerCloseStatus, setHeaderCloseStatus] = useState(true);
 
     const initialStatus = () => {
         setStaticBackdropStatus(false);
         setScrollableStatus(false);
-        setCenteredStatus(false);
-        setSizeStatus(null);
+        setCenteredStatus(true);
+        setSizeStatus('lg');
         setFullScreenStatus(undefined);
-        setAnimationStatus(true);
+        setAnimationStatus(false);
         setLongContentStatus(false);
         setHeaderCloseStatus(true);
     };
     return (
         <>
+            {includeButton && (
+                <Button
+                    className='btn btn-outline-info border-transparent btn-hover-shadow-lg shadow-none'
+                    isLight
+                    icon='Add'
+                    onClick={() => {
+                        initialStatus();
+                        setAnimationStatus(false);
+                        setCenteredStatus(true);
+                        setSizeStatus('lg');
+                        setIsOpen(true)
+                    }}>
+                    {nameButton}
+                </Button>
+            )}
 
-            <Button
-                className='btn btn-outline-info border-transparent btn-hover-shadow-lg shadow-none'
-                isLight
-                icon='Add'
-                onClick={() => {
-                    initialStatus();
-                    setAnimationStatus(false);
-                    setCenteredStatus(true);
-                    setSizeStatus('lg');
-                    setIsOpen(true)
-                }}>
-                {nameButton}
-            </Button>
             <Modal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}

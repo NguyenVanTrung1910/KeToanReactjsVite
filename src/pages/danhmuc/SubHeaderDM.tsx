@@ -14,6 +14,7 @@ interface SubProps {
     listButton?: ReactNode;
 }
 const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1,listButton }) => {
+    console.log('subheader')
     return (
         <SubHeader>
             <SubHeaderLeft>
@@ -37,4 +38,5 @@ const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1,listButt
         </SubHeader>
     )
 }
+
 export default SubHeaderDM

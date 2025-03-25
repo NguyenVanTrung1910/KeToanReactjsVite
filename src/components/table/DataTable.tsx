@@ -53,8 +53,11 @@ interface ColumnProps {
   col: TitleColTable;
 }
 
-const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, pageSize = 10, displayCol, loai, getContentModal }) => {
-  const [isOpen,setIsOpen] = useState(false);
+const DataTable: React.FC<CustomDataGridProps> = React.memo(({
+  url, keyField, columns, pageSize = 10, displayCol, loai, getContentModal
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [idItem, setidItem] = useState(0);
   const dataSource = useMemo(() => createStore({
     key: keyField,
     loadUrl: `${url}/GetDataForTable?loai=${loai}`,
@@ -94,16 +97,20 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
     const rowID = e.row.data.ID;
     console.log("ID cần sửa:", rowID);
     setIsOpen(true)
+    setidItem(rowID)
   };
 
   const handleDeleteClick = (e: any) => {
     const rowID = e.row.data.ID;
     console.log("ID cần xóa:", rowID);
+    setidItem(rowID)
+
     // Gọi API xóa nếu cần
   };
   // const filteredColumns = useMemo(() => {
   //   return columns.filter(col => !displayCol || displayCol.includes(col.TENTRUONG));
   // }, [columns]);
+  console.log('datatable')
   return (
     <>
       <DataGrid dataSource={dataSource} showBorders height={600} remoteOperations={true} columnAutoWidth={true}  // Đặt cột tự động căn chỉnh độ rộng
@@ -111,13 +118,6 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
         groupPanel={{
           visible: true,
           emptyPanelText: "Nhóm dữ liệu bằng cách kéo cột vào đây!"
-        }}
-
-        onEditingStart={(e) => {
-          console.log("Sửa hàng có ID:", e.data.ID);
-        }}
-        onRowRemoving={(e) => {
-          console.log("Xóa hàng có ID:", e.data.ID);
         }}
 
       >
@@ -186,9 +186,9 @@ const DataTable: React.FC<CustomDataGridProps> = ({ url, keyField, columns, page
 
         }
       </DataGrid>
-      <AddAndEditModal content={getContentModal(0,'')} isOpen={isOpen} setIsOpen={setIsOpen} nameButton="Edit" title="Sửa thông tin"/>
+      <AddAndEditModal content={getContentModal(idItem, '')} isOpen={isOpen} setIsOpen={setIsOpen} nameButton="Edit" title="Sửa thông tin" includeButton={false} />
     </>
   );
-};
+});
 
 export default DataTable;
