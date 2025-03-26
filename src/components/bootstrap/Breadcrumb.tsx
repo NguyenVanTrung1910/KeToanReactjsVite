@@ -102,7 +102,7 @@ const Breadcrumb: FC<IBreadcrumbProps> = ({
 								key={item.title}
 								tag={item.tag || itemTag}
 								to={item.to}
-								isActive={autoActive && list.length === index + 1}
+								// isActive={autoActive && list.length === index + 1}
 								divider={DIVIDER as ReactElement}>
 								{item.title}
 							</BreadcrumbItem>
@@ -113,7 +113,7 @@ const Breadcrumb: FC<IBreadcrumbProps> = ({
 								// @ts-ignore
 								tag: child.props.tag || itemTag,
 								// @ts-ignore
-								isActive: autoActive && children.length === index + 1,
+								// isActive: autoActive && children.length === index + 1,
 								// @ts-ignore
 								divider: child.props.divider || DIVIDER,
 							}),

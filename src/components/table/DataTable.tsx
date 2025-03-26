@@ -2,7 +2,6 @@ import React, { forwardRef, ReactNode, useEffect, useMemo, useRef, useState } fr
 import 'devextreme/data/odata/store';
 import {
   Column,
-  Button,
   DataGrid,
   FilterRow,
   HeaderFilter,
@@ -27,6 +26,7 @@ import { cp, truncate } from "fs";
 import AddAndEditModal from "../Modal/AddAndEditModal";
 import Api from "../../Api/api";
 import showNotification from "../extras/showNotification";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 interface CustomDataGridProps {
   url: string;
   keyField: string;
@@ -34,7 +34,9 @@ interface CustomDataGridProps {
   pageSize?: number;
   displayCol?: string[];
   loai: string;
-  getContentModal: (idItem: number, url: string) => JSX.Element;
+  setOpenModal: (status: boolean) => void;
+  idItemCurrent: React.MutableRefObject<number>;
+  // getContentModal: (idItem: number, url: string) => JSX.Element;
 }
 interface TitleColTable {
   TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; RULES?: string, HIENTHI?: number,
@@ -56,13 +58,12 @@ interface ColumnProps {
 }
 
 const DataTable: React.FC<CustomDataGridProps> = ({
-  url, keyField, columns, pageSize = 10, displayCol, loai, getContentModal
+  url, keyField, columns, pageSize = 10, displayCol, loai,idItemCurrent,setOpenModal
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [idItem, setidItem] = useState(0);
   const gridRef = useRef<DataGrid>(null);
-  const [reloadTrigger, setReloadTrigger] = useState(0);
-  const dataSource = useMemo(() => createStore({
+  const dataSource =createStore({
     key: keyField,
     loadUrl: `${url}/GetDataForTable?loai=${loai}`,
     insertUrl: `${url}/InsertOrder`,
@@ -71,7 +72,7 @@ const DataTable: React.FC<CustomDataGridProps> = ({
     onBeforeSend: (method, ajaxOptions) => {
       ajaxOptions.xhrFields = { withCredentials: true };
     },
-  }), [keyField, url, loai, reloadTrigger]);
+  });
   const parseRules = (rulesJson?: string): JSX.Element[] => {
     if (!rulesJson || typeof rulesJson !== "string") return [];
 
@@ -97,19 +98,15 @@ const DataTable: React.FC<CustomDataGridProps> = ({
     }
   };
   useEffect(() => {
-    if (!isOpen && gridRef.current) {
-      gridRef.current.instance.getDataSource().reload();
-      gridRef.current.instance.getDataSource().load();
-    }
-  }, [isOpen]);
+
+  }, []);
   const handleEditClick = (e: any) => {
     const rowID = e.row.data.ID;
-    console.log("ID cần sửa:", rowID);
-    setIsOpen(true)
     setidItem(rowID)
+    idItemCurrent.current = rowID   
+    setOpenModal(true)
   };
   const reloadGrid = () => {
-    setReloadTrigger(prev => prev + 1);
     if (gridRef.current) {
       const dataSource1 = gridRef.current.instance.getDataSource();
       if (dataSource1) {
@@ -119,15 +116,18 @@ const DataTable: React.FC<CustomDataGridProps> = ({
     }
 
   };
-
-  const handleDeleteClick = (e: any) => {
+  const handleOpenModal = (e: any) => {
     const rowID = e.row.data.ID;
+    setidItem(rowID)
+    setOpenDeleteModal(true)
+  };
+  const handleDeleteClick = () => {
     const deleteData = async () => {
       try {
         const response = await Api.delete(`${url}/XoaDong`, {
           params: {
             TenBang: loai,
-            IDcmd: rowID
+            IDcmd: idItem
           }
         });
 
@@ -148,6 +148,7 @@ const DataTable: React.FC<CustomDataGridProps> = ({
       }
     };
     deleteData()
+    setOpenDeleteModal(false)
 
     // Gọi API xóa nếu cần
   };
@@ -181,7 +182,7 @@ const DataTable: React.FC<CustomDataGridProps> = ({
             {
               hint: "Xóa",
               icon: "trash",
-              onClick: handleDeleteClick,
+              onClick: handleOpenModal,
             },
           ]}>
           </Column>
@@ -215,7 +216,14 @@ const DataTable: React.FC<CustomDataGridProps> = ({
 
         }
       </DataGrid>
-      <AddAndEditModal content={getContentModal(idItem, '')} isOpen={isOpen} setIsOpen={setIsOpen} nameButton="Edit" title="Sửa thông tin" includeButton={false} />
+      <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa không?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteModal(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteClick}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useTour } from '@reactour/tour';
 import { demoPagesMenu } from '../../../menu';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -7,9 +7,14 @@ import Page from '../../../layout/Page/Page';
 import ThemeContext from '../../../contexts/themeContext';
 import DataGrid from '../../../components/table/DataGrid';
 import SubHeaderDM from '../SubHeaderDM';
+import AddAndEditModal from '../../../components/Modal/AddAndEditModal';
+import TaiKhoanForm from '../Form/TaiKhoanForm';
 const NhomDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const idItemCurrent = useRef(1);
+
     useEffect(() => {
         if (localStorage.getItem('tourModalStarted') !== 'shown' && !mobileDesign) {
             setTimeout(() => {
@@ -19,6 +24,8 @@ const NhomDoiTuong = () => {
         }
         return () => { };
     }, []);
+    console.log('Nhom doi tuong')
+    console.log(idItemCurrent.current)
     return (
         // <KeepAlive>
         <PageWrapper title={demoPagesMenu.sales.subMenu.dashboard.text}>
@@ -27,14 +34,18 @@ const NhomDoiTuong = () => {
             <Page container='fluid'>
                 <div className='row'>
                     <div className='col-xxl-12'>
-                        {/* <DataGrid
+                        <DataGrid
                             apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmucnhomdonvi`}
-                            loai='danhmucnhomdonvi' /> */}
+                            loai='danhmucnhomdonvi' idItemCurrent={idItemCurrent} setOpenModal={setIsOpenModal}/>
                     </div>
 
                 </div>
+                <AddAndEditModal
+                    content={<TaiKhoanForm idItem={idItemCurrent} setOpenModal={setIsOpenModal}/>}
+                    includeButton={true} isOpen={isOpenModal} setIsOpen={setIsOpenModal} title='' nameButton='' />
             </Page>
+
         </PageWrapper>
         //</KeepAlive>
     );

@@ -39,7 +39,7 @@ const HomePage = () => {
                 <Page container='fluid'>
                     <div className='row'>
                         <div className='col-xxl-12'>
-                            <GetDataForTable apiUrlForAll='https://localhost:44336/api/danhmuc' apiUrlGetTitle='/danhmuc/GetAllItem?loai=NOIDUNGCHUNGTU' loai='NOIDUNGCHUNGTU'/>
+                            {/* <GetDataForTable apiUrlForAll='https://localhost:44336/api/danhmuc' apiUrlGetTitle='/danhmuc/GetAllItem?loai=NOIDUNGCHUNGTU' loai='NOIDUNGCHUNGTU'/> */}
                         </div>
                     </div>
                 </Page>

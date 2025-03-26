@@ -15,10 +15,12 @@ interface GetDataProps {
   apiUrlForAll: string;
   apiUrlGetTitle: string;
   loai: string;
-  getContentModal: (idItem: number, url: string) => JSX.Element;
+  // getContentModal: (idItem: number, url: string) => JSX.Element;
+  setOpenModal: (status:boolean)=>void;
+  idItemCurrent: React.MutableRefObject<number>;
 }
 
-const DataGrid: React.FC<GetDataProps> = ({ apiUrlForAll, apiUrlGetTitle, loai, getContentModal }) => {
+const DataGrid: React.FC<GetDataProps> = ({ apiUrlForAll, apiUrlGetTitle, loai,idItemCurrent,setOpenModal }) => {
   const [columns, setColumns] = useState<TitleColTable[]>([]); // Lưu cột trong state
   const [isLoaded, setIsLoaded] = useState(false); // Trạng thái tải dữ liệu xong
   useEffect(() => {
@@ -41,7 +43,7 @@ const DataGrid: React.FC<GetDataProps> = ({ apiUrlForAll, apiUrlGetTitle, loai, 
   }, [apiUrlGetTitle]); // Gọi lại khi apiUrlGetTitle thay đổi
   return isLoaded ? (
     <div className="card card-stretch-full">
-      <DataTable url={apiUrlForAll} keyField="ID" columns={columns} pageSize={10} loai={loai} getContentModal={getContentModal} />
+      <DataTable url={apiUrlForAll} keyField="ID" columns={columns} pageSize={10} loai={loai} idItemCurrent={idItemCurrent} setOpenModal={setOpenModal}/>
     </div>
   ) : (
     <h2>Loading...</h2>

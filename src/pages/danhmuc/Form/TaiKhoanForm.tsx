@@ -7,8 +7,13 @@ import Select from "../../../components/bootstrap/forms/Select";
 import Checks, { ChecksGroup } from "../../../components/bootstrap/forms/Checks";
 import Textarea from "../../../components/bootstrap/forms/Textarea";
 import showNotification from "../../../components/extras/showNotification";
+import Button from "../../../components/bootstrap/Button";
+interface TaiKhoanFormProps{
+    idItem: number, url?: string, setOpenModal: (status: boolean) => void;
 
-const TaiKhoanForm = (idItem: number, url?: string) => {
+}
+
+const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }) => {
     const [listLoaiTaiKhoan, setListLoaiTaiKhoan] = useState<string[]>([]);
     const [initialValues, setInitialValues] = useState({
         shtk: "",
@@ -29,14 +34,16 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
         chkHIENCCDC: false,
         chkCONGCU: false,
     });
+    console.log('tk')
+
     useEffect(() => {
-        // const getLoaiTaiKhoan = async () => {
-        //     const response = await Api.get(`${import.meta.env.VITE_API_URL}/danhmuc/GetLoaiTaiKhoan`);
-        //     if (true) {
-        //         const loaiTaiKhoanList = response.data.map((item: any) => item.LOAITAIKHOAN);
-        //         setListLoaiTaiKhoan(loaiTaiKhoanList);
-        //     }
-        // }
+        const getLoaiTaiKhoan = async () => {
+            const response = await Api.get(`${import.meta.env.VITE_API_URL}/danhmuc/GetLoaiTaiKhoan`);
+            if (true) {
+                const loaiTaiKhoanList = response.data.data.map((item: any) => item.LOAITAIKHOAN);
+                setListLoaiTaiKhoan(loaiTaiKhoanList);
+            }
+        }
 
         if (idItem !== 0) {
             const fetchData = async () => {
@@ -46,7 +53,7 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                             TenBang: "DANHMUCTAIKHOAN",
                             MaSo: "SHTK",
                             iddoituong: idItem.toString(),
-                            madoituong: ""
+                            madoituong: "111"
                         }
                     });
 
@@ -78,42 +85,42 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                 } catch (error) {
                     console.error("Lỗi khi lấy dữ liệu:", error);
                 }
-            console.log(12003213)
+                console.log(12003213)
             };
             fetchData(); // Gọi hàm async
         }
         // console.log(123232323)
-        // getLoaiTaiKhoan();
+        getLoaiTaiKhoan();
     }, [idItem]); // Chạy lại khi `idItem` thay đổi
-
 
     const handleSubmit = async (values: any) => {
         try {
             const formatSQLInsert = (values: any) => {
                 if (idItem > 0)
                     return `EDITOK***GHICHU=N'${values.ghiChu}',
-                    SHTK=N'${values.shtk}',
-                    TENTAIKHOAN=N'${values.tenTaiKhoan}',
-                    BATBUOC=${values.chkBATBUOC ? 1 : 0},
-                    CHITIET=${values.chkCHITIET ? 1 : 0},
-                    VATTU=${values.chkVATTU ? 1 : 0},
-                    HOPDONG=${values.chkHOPDONG ? 1 : 0},
-                    KHOANMUC=${values.chkKHOANMUC ? 1 : 0},
-                    HDSXKD=${values.chkHDSXKD ? 1 : 0},
-                    SODU2BEN=${values.chkSODU2BEN ? 1 : 0},
-                    GIATHANH=${values.chkGIATHANH ? 1 : 0},
-                    CONGTRINH=${values.chkCONGTRINH ? 1 : 0},
-                    PHONGBAN=${values.chkPHONGBAN ? 1 : 0},
-                    HIENCCDC=${values.chkHIENCCDC ? 1 : 0},
-                    CONGCU=${values.chkCONGCU ? 1 : 0},
-                    TENNGANHANG=NULL,
-                    SOTAIKHOAN=NULL,
-                    CAPTK=N'${values.capTaiKhoan}',
-                    LOAITAIKHOAN=N'${values.loaiTaiKhoan}'
-                    WHERE ID=${idItem}`;
+                        SHTK=N'${values.shtk}',
+                        TENTAIKHOAN=N'${values.tenTaiKhoan}',
+                        BATBUOC=${values.chkBATBUOC ? 1 : 0},
+                        CHITIET=${values.chkCHITIET ? 1 : 0},
+                        VATTU=${values.chkVATTU ? 1 : 0},
+                        HOPDONG=${values.chkHOPDONG ? 1 : 0},
+                        KHOANMUC=${values.chkKHOANMUC ? 1 : 0},
+                        HDSXKD=${values.chkHDSXKD ? 1 : 0},
+                        SODU2BEN=${values.chkSODU2BEN ? 1 : 0},
+                        GIATHANH=${values.chkGIATHANH ? 1 : 0},
+                        CONGTRINH=${values.chkCONGTRINH ? 1 : 0},
+                        PHONGBAN=${values.chkPHONGBAN ? 1 : 0},
+                        HIENCCDC=${values.chkHIENCCDC ? 1 : 0},
+                        CONGCU=${values.chkCONGCU ? 1 : 0},
+                        TENNGANHANG=NULL,
+                        SOTAIKHOAN=NULL,
+                        CAPTK=N'${values.capTaiKhoan}',
+                        LOAITAIKHOAN=N'${values.loaiTaiKhoan}'
+                        WHERE ID=${idItem}`;
                 return `ADDNEWOK***GHICHU, SHTK, TENTAIKHOAN, BATBUOC, CHITIET, VATTU, HOPDONG, KHOANMUC, HDSXKD, SODU2BEN, GIATHANH, CONGTRINH, PHONGBAN, HIENCCDC, CONGCU, TENNGANHANG, SOTAIKHOAN, CAPTK, LOAITAIKHOAN) VALUESOK***N'${values.ghiChu}',N'${values.shtk}',N'${values.tenTaiKhoan}',${values.chkBATBUOC ? 1 : 0}, ${values.chkCHITIET ? 1 : 0}, ${values.chkVATTU ? 1 : 0}, ${values.chkHOPDONG ? 1 : 0}, ${values.chkKHOANMUC ? 1 : 0}, ${values.chkHDSXKD ? 1 : 0}, ${values.chkSODU2BEN ? 1 : 0}, ${values.chkGIATHANH ? 1 : 0}, ${values.chkCONGTRINH ? 1 : 0}, ${values.chkPHONGBAN ? 1 : 0}, ${values.chkHIENCCDC ? 1 : 0}, ${values.chkCONGCU ? 1 : 0}, ${values.tenNganHang ? `N'${values.tenNganHang}'` : "NULL"}, ${values.soTaiKhoan ? `N'${values.soTaiKhoan}'` : "NULL"}, N'${values.capTaiKhoan}', N'${values.loaiTaiKhoan}')`;
             };
             const sqlQuery = formatSQLInsert(values);
+            console.log(sqlQuery);
             const response = await Api.post(
                 `${import.meta.env.VITE_API_URL}/danhmuc/SaveAddOrEditDanhMuc`,
                 null,  // Body phải là `null` vì dữ liệu gửi qua query
@@ -126,35 +133,59 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                     }
                 }
             );
-            if(response.status == 200){
-                if(response.data.success === false){
+
+            if (response.status == 200) {
+                if (response.data.success === false) {
                     showNotification('', response.data.message, 'warning')
-                }else{
-                    showNotification('', 'Thêm thành công', 'success')
+                } else {
+                    if (idItem > 0) showNotification('', 'Sửa thành công', 'success')
+                    else showNotification('', 'Thêm thành công', 'success')
                 }
-            }else{
+            } else {
                 showNotification('', 'Đã xảy ra lỗi trong quá trình thêm mới', 'danger')
             }
-            
 
 
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
+    const handleAddMore = (resetForm: () => void) => {
+        resetForm(); // Reset lại form về giá trị ban đầu
+        setInitialValues({
+            shtk: "",
+            tenTaiKhoan: "",
+            capTaiKhoan: '',
+            loaiTaiKhoan: "",
+            ghiChu: "",
+            chkBATBUOC: false,
+            chkCHITIET: false,
+            chkVATTU: false,
+            chkHOPDONG: false,
+            chkKHOANMUC: false,
+            chkHDSXKD: false,
+            chkSODU2BEN: false,
+            chkGIATHANH: false,
+            chkCONGTRINH: false,
+            chkPHONGBAN: false,
+            chkHIENCCDC: false,
+            chkCONGCU: false,
+        })
+    };
+
     return (
         <Formik
             enableReinitialize
             initialValues={initialValues}
             onSubmit={handleSubmit}
         >
-            {({ setFieldValue, values, handleChange }) => (
+            {({ setFieldValue, values, handleChange, resetForm }) => (
                 <Form className="row g-4 w-100">
                     <div className="col-12">
                         <FastField name="shtk">
                             {({ field }: any) => (
                                 <FormGroup id="shtk" label="SHTK" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
-                                    <Input type="text" {...field} />
+                                    <Input type="text" {...field} required />
                                 </FormGroup>
                             )}
                         </FastField>
@@ -333,11 +364,24 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                             )}
                         </FastField>
                     </div>
-                    <div className="col-12">
-                        <button type="submit" className="btn btn-primary">
-                            Gửi dữ liệu
-                        </button>
+                    <div className="col-12 d-flex justify-content-end gap-2">
+                        <Button color="info" icon="Save" type="submit">
+                            Cất giữ
+                        </Button>
+                        <Button color='success' icon='Add' onClick={() => handleAddMore(resetForm)}>
+                            Thêm tiếp
+                        </Button>
+                        <Button
+                            color='danger'
+                            //isOutline
+                            className='border'
+                            onClick={() => setOpenModal(false)}
+                            >
+                            Đóng
+                        </Button>
                     </div>
+
+
                 </Form>
             )}
         </Formik>
