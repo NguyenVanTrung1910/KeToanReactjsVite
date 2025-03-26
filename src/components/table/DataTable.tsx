@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { forwardRef, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import 'devextreme/data/odata/store';
 import {
   Column,
@@ -26,6 +26,7 @@ import { DataType } from "devextreme/ui/data_grid";
 import { cp, truncate } from "fs";
 import AddAndEditModal from "../Modal/AddAndEditModal";
 import Api from "../../Api/api";
+import showNotification from "../extras/showNotification";
 interface CustomDataGridProps {
   url: string;
   keyField: string;
@@ -54,11 +55,13 @@ interface ColumnProps {
   col: TitleColTable;
 }
 
-const DataTable: React.FC<CustomDataGridProps> = React.memo(({
+const DataTable: React.FC<CustomDataGridProps> = ({
   url, keyField, columns, pageSize = 10, displayCol, loai, getContentModal
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [idItem, setidItem] = useState(0);
+  const gridRef = useRef<DataGrid>(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
   const dataSource = useMemo(() => createStore({
     key: keyField,
     loadUrl: `${url}/GetDataForTable?loai=${loai}`,
@@ -68,7 +71,7 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
     onBeforeSend: (method, ajaxOptions) => {
       ajaxOptions.xhrFields = { withCredentials: true };
     },
-  }), [keyField, url, loai]);
+  }), [keyField, url, loai, reloadTrigger]);
   const parseRules = (rulesJson?: string): JSX.Element[] => {
     if (!rulesJson || typeof rulesJson !== "string") return [];
 
@@ -93,12 +96,28 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
       return [];
     }
   };
-
+  useEffect(() => {
+    if (!isOpen && gridRef.current) {
+      gridRef.current.instance.getDataSource().reload();
+      gridRef.current.instance.getDataSource().load();
+    }
+  }, [isOpen]);
   const handleEditClick = (e: any) => {
     const rowID = e.row.data.ID;
     console.log("ID cần sửa:", rowID);
     setIsOpen(true)
     setidItem(rowID)
+  };
+  const reloadGrid = () => {
+    setReloadTrigger(prev => prev + 1);
+    if (gridRef.current) {
+      const dataSource1 = gridRef.current.instance.getDataSource();
+      if (dataSource1) {
+        dataSource1.reload(); // Reload dữ liệu
+        dataSource1.load(); // Reload dữ liệu
+      }
+    }
+
   };
 
   const handleDeleteClick = (e: any) => {
@@ -113,13 +132,19 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
         });
 
         if (response.status === 200) {
-          console.log("Xóa thành công:", response.data);
-          // Có thể cập nhật lại danh sách sau khi xóa
+          if (response.data.success === false) {
+            showNotification('', response.data.message, 'warning')
+
+          } else {
+            showNotification('', response.data.message, 'success')
+            reloadGrid()
+
+          }
         } else {
-          console.error("Lỗi khi xóa:", response.data);
+          showNotification('', 'Đã xảy ra lỗi trong quá trình xóa', 'danger')
         }
       } catch (error) {
-        console.error("Lỗi trong quá trình gọi API:", error);
+        showNotification('', 'Đã xảy ra lỗi trong quá trình xóa', 'danger')
       }
     };
     deleteData()
@@ -129,10 +154,9 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
   // const filteredColumns = useMemo(() => {
   //   return columns.filter(col => !displayCol || displayCol.includes(col.TENTRUONG));
   // }, [columns]);
-  console.log('datatable')
   return (
     <>
-      <DataGrid dataSource={dataSource} showBorders height={600} remoteOperations={true} columnAutoWidth={true}  // Đặt cột tự động căn chỉnh độ rộng
+      <DataGrid dataSource={dataSource} ref={gridRef} showBorders height={600} remoteOperations={true} columnAutoWidth={true}  // Đặt cột tự động căn chỉnh độ rộng
         // columnMinWidth={90}
         groupPanel={{
           visible: true,
@@ -144,30 +168,29 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
         <Pager showPageSizeSelector={true} allowedPageSizes={[5, 10, 20]} showInfo={true} />
         <Column
           caption="STT"
-          width={60}
+          width={70}
           cellRender={(data) => <span>{data.component.pageIndex() * data.component.pageSize() + data.rowIndex + 1}</span>}
         />
+        {columns.some(col => col.TENTRUONG === 'SUAXOA') &&
+          <Column type="buttons" width={90} caption="Sửa-Xóa" alignment='left' buttons={[
+            {
+              hint: "Sửa",
+              icon: "edit",
+              onClick: handleEditClick,
+            },
+            {
+              hint: "Xóa",
+              icon: "trash",
+              onClick: handleDeleteClick,
+            },
+          ]}>
+          </Column>
+
+        }
         {columns
           .filter(col => !displayCol || displayCol.includes(col.TENTRUONG)) // Lọc cột hiển thị
           .map((col) => {
-            if (col.HIENTHI === 0) return null; // Bỏ qua cột không hiển thị
-            if (col.TENTRUONG === 'SUAXOA') {
-              return (
-                <Column type="buttons" width={90} caption={col.TENCOT} alignment='left' buttons={[
-                  {
-                    hint: "Sửa",
-                    icon: "edit",
-                    onClick: handleEditClick,
-                  },
-                  {
-                    hint: "Xóa",
-                    icon: "trash",
-                    onClick: handleDeleteClick,
-                  },
-                ]}>
-                </Column>
-              )
-            }
+            if (col.HIENTHI === 0 || col.TENTRUONG === 'SUAXOA') return null; // Bỏ qua cột không hiển thị
             return (
               <Column
                 key={col.TENTRUONG}
@@ -176,19 +199,6 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
                 dataType={col.KIEUDULIEU as DataType}
                 alignment={col.KIEUDULIEU === "number" ? "left" : undefined}
               >
-                {col.LOOKUPURL !== "/" && (
-                  <Lookup
-                    dataSource={createStore({
-                      key: "Value",
-                      loadUrl: col.LOOKUPURL,
-                      onBeforeSend: (method, ajaxOptions) => {
-                        ajaxOptions.xhrFields = { withCredentials: true };
-                      },
-                    })}
-                    valueExpr="Value"
-                    displayExpr="Text"
-                  />
-                )}
                 {parseRules(col.RULES)}
               </Column>
             );
@@ -208,6 +218,6 @@ const DataTable: React.FC<CustomDataGridProps> = React.memo(({
       <AddAndEditModal content={getContentModal(idItem, '')} isOpen={isOpen} setIsOpen={setIsOpen} nameButton="Edit" title="Sửa thông tin" includeButton={false} />
     </>
   );
-});
+};
 
 export default DataTable;

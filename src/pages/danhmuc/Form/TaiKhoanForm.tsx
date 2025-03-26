@@ -6,6 +6,7 @@ import Input from "../../../components/bootstrap/forms/Input";
 import Select from "../../../components/bootstrap/forms/Select";
 import Checks, { ChecksGroup } from "../../../components/bootstrap/forms/Checks";
 import Textarea from "../../../components/bootstrap/forms/Textarea";
+import showNotification from "../../../components/extras/showNotification";
 
 const TaiKhoanForm = (idItem: number, url?: string) => {
     const [listLoaiTaiKhoan, setListLoaiTaiKhoan] = useState<string[]>([]);
@@ -113,7 +114,6 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                 return `ADDNEWOK***GHICHU, SHTK, TENTAIKHOAN, BATBUOC, CHITIET, VATTU, HOPDONG, KHOANMUC, HDSXKD, SODU2BEN, GIATHANH, CONGTRINH, PHONGBAN, HIENCCDC, CONGCU, TENNGANHANG, SOTAIKHOAN, CAPTK, LOAITAIKHOAN) VALUESOK***N'${values.ghiChu}',N'${values.shtk}',N'${values.tenTaiKhoan}',${values.chkBATBUOC ? 1 : 0}, ${values.chkCHITIET ? 1 : 0}, ${values.chkVATTU ? 1 : 0}, ${values.chkHOPDONG ? 1 : 0}, ${values.chkKHOANMUC ? 1 : 0}, ${values.chkHDSXKD ? 1 : 0}, ${values.chkSODU2BEN ? 1 : 0}, ${values.chkGIATHANH ? 1 : 0}, ${values.chkCONGTRINH ? 1 : 0}, ${values.chkPHONGBAN ? 1 : 0}, ${values.chkHIENCCDC ? 1 : 0}, ${values.chkCONGCU ? 1 : 0}, ${values.tenNganHang ? `N'${values.tenNganHang}'` : "NULL"}, ${values.soTaiKhoan ? `N'${values.soTaiKhoan}'` : "NULL"}, N'${values.capTaiKhoan}', N'${values.loaiTaiKhoan}')`;
             };
             const sqlQuery = formatSQLInsert(values);
-            console.log(sqlQuery);
             const response = await Api.post(
                 `${import.meta.env.VITE_API_URL}/danhmuc/SaveAddOrEditDanhMuc`,
                 null,  // Body phải là `null` vì dữ liệu gửi qua query
@@ -126,15 +126,22 @@ const TaiKhoanForm = (idItem: number, url?: string) => {
                     }
                 }
             );
-
-            console.log(response.data)
+            if(response.status == 200){
+                if(response.data.success === false){
+                    showNotification('', response.data.message, 'warning')
+                }else{
+                    showNotification('', 'Thêm thành công', 'success')
+                }
+            }else{
+                showNotification('', 'Đã xảy ra lỗi trong quá trình thêm mới', 'danger')
+            }
+            
 
 
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
-    console.log('ádjsakdj')
     return (
         <Formik
             enableReinitialize

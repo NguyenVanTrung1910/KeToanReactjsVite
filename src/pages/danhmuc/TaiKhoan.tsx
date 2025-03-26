@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useTour } from '@reactour/tour';
 import { demoPagesMenu } from '../../menu';
 import PageWrapper from '../../layout/PageWrapper/PageWrapper';
 
 import Page from '../../layout/Page/Page';
 import ThemeContext from '../../contexts/themeContext';
-import DataGrid from '../../components/table/DataGrid';
+import DataGridAPI from '../../components/table/DataGrid';
 import SubHeaderDM from './SubHeaderDM';
 import AddAndEditModal from '../../components/Modal/AddAndEditModal';
 import Api from "../../Api/api";
@@ -15,6 +15,8 @@ import Input from "../../components/bootstrap/forms/Input";
 import Select from "../../components/bootstrap/forms/Select";
 import Checks, { ChecksGroup } from "../../components/bootstrap/forms/Checks";
 import Textarea from "../../components/bootstrap/forms/Textarea";
+import showNotification from '../../components/extras/showNotification';
+import Button, { ButtonGroup } from '../../components/bootstrap/Button';
 const DanhMucDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
@@ -29,7 +31,7 @@ const DanhMucDoiTuong = () => {
         }
         return () => { };
     }, []);
-    const GetContenModal1 = (idItem: number, url?: string) => {
+    const GetContenModal = (idItem: number, url?: string) => {
         const [listLoaiTaiKhoan, setListLoaiTaiKhoan] = useState<string[]>([]);
         const [initialValues, setInitialValues] = useState({
             shtk: "",
@@ -58,7 +60,7 @@ const DanhMucDoiTuong = () => {
                     setListLoaiTaiKhoan(loaiTaiKhoanList);
                 }
             }
-    
+
             if (idItem !== 0) {
                 const fetchData = async () => {
                     try {
@@ -70,7 +72,7 @@ const DanhMucDoiTuong = () => {
                                 madoituong: "111"
                             }
                         });
-    
+
                         if (response.data && response.data.data.length > 0) {
                             const apiData = response.data.data[0]; // Lấy object đầu tiên từ mảng data
                             const validCapTaiKhoan = [1, 2, 3, 4, 5, 6, 7].includes(apiData.CAPTK)
@@ -99,15 +101,14 @@ const DanhMucDoiTuong = () => {
                     } catch (error) {
                         console.error("Lỗi khi lấy dữ liệu:", error);
                     }
-                console.log(12003213)
+                    console.log(12003213)
                 };
                 fetchData(); // Gọi hàm async
             }
             // console.log(123232323)
             getLoaiTaiKhoan();
         }, [idItem]); // Chạy lại khi `idItem` thay đổi
-    
-    
+
         const handleSubmit = async (values: any) => {
             try {
                 const formatSQLInsert = (values: any) => {
@@ -148,28 +149,59 @@ const DanhMucDoiTuong = () => {
                         }
                     }
                 );
-    
-                console.log(response.data)
-    
-    
+
+                if (response.status == 200) {
+                    if (response.data.success === false) {
+                        showNotification('', response.data.message, 'warning')
+                    } else {
+                        if (idItem > 0) showNotification('', 'Sửa thành công', 'success')
+                        else showNotification('', 'Thêm thành công', 'success')
+                    }
+                } else {
+                    showNotification('', 'Đã xảy ra lỗi trong quá trình thêm mới', 'danger')
+                }
+
+
             } catch (error) {
                 console.error("Lỗi khi gửi dữ liệu:", error);
             }
         };
-        console.log('TaiKhoanForm')
+        const handleAddMore = (resetForm: () => void) => {
+            resetForm(); // Reset lại form về giá trị ban đầu
+            setInitialValues({
+                shtk: "",
+                tenTaiKhoan: "",
+                capTaiKhoan: '',
+                loaiTaiKhoan: "",
+                ghiChu: "",
+                chkBATBUOC: false,
+                chkCHITIET: false,
+                chkVATTU: false,
+                chkHOPDONG: false,
+                chkKHOANMUC: false,
+                chkHDSXKD: false,
+                chkSODU2BEN: false,
+                chkGIATHANH: false,
+                chkCONGTRINH: false,
+                chkPHONGBAN: false,
+                chkHIENCCDC: false,
+                chkCONGCU: false,
+            })
+        };
+
         return (
             <Formik
                 enableReinitialize
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
             >
-                {({ setFieldValue, values, handleChange }) => (
+                {({ setFieldValue, values, handleChange, resetForm }) => (
                     <Form className="row g-4 w-100">
                         <div className="col-12">
                             <FastField name="shtk">
                                 {({ field }: any) => (
                                     <FormGroup id="shtk" label="SHTK" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
-                                        <Input type="text" {...field} />
+                                        <Input type="text" {...field} required />
                                     </FormGroup>
                                 )}
                             </FastField>
@@ -342,41 +374,52 @@ const DanhMucDoiTuong = () => {
                                             placeholder=''
                                             aria-label='.form-control-lg example'
                                             {...field}
-    
+
                                         />
                                     </FormGroup>
                                 )}
                             </FastField>
                         </div>
-                        <div className="col-12">
-                            <button type="submit" className="btn btn-primary">
-                                Gửi dữ liệu
-                            </button>
+                        <div className="col-12 d-flex justify-content-end gap-2">
+                            <Button color="info" icon="Save" type="submit">
+                                Cất giữ
+                            </Button>
+                            <Button color='success' icon='Add' onClick={() => handleAddMore(resetForm)}>
+                                Thêm tiếp
+                            </Button>
+                            <Button
+                                color='danger'
+                                //isOutline
+                                className='border'
+                                onClick={() => setIsOpenModal(false)}>
+                                Đóng
+                            </Button>
                         </div>
+
+
                     </Form>
                 )}
             </Formik>
         );
     };
     return (<>
-
         <PageWrapper title={demoPagesMenu.sales.subMenu.dashboard.text}>
             <SubHeaderDM link1='' link2='/danhmuc/danhmuc/loai=danhmuctaikhoan' title1='Danh Mục' title2='Danh Mục Tài Khoản'
                 listButton={<AddAndEditModal
                     nameButton='Thêm mới'
                     title='Thêm Mới Tài Khoản'
-                    content={GetContenModal1(0, '')} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
+                    content={GetContenModal(0, '')} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
                     includeButton={true} />}
             />
 
             <Page container='fluid'>
                 <div className='row'>
                     <div className='col-xxl-12'>
-                        <DataGrid
+                        <DataGridAPI
                             apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmuctaikhoan`}
                             loai='danhmuctaikhoan'
-                            getContentModal={GetContenModal1}
+                            getContentModal={GetContenModal}
                         />
                     </div>
 
