@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Api from "../../../Api/api";
 import { FastField, Form, Formik } from "formik";
 import FormGroup from "../../../components/bootstrap/forms/FormGroup";
@@ -8,19 +8,19 @@ import Checks, { ChecksGroup } from "../../../components/bootstrap/forms/Checks"
 import Textarea from "../../../components/bootstrap/forms/Textarea";
 import showNotification from "../../../components/extras/showNotification";
 import Button from "../../../components/bootstrap/Button";
-interface TaiKhoanFormProps{
+interface TaiKhoanFormProps {
     idItem: number, url?: string, setOpenModal: (status: boolean) => void;
 
 }
 
 const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }) => {
     const [listLoaiTaiKhoan, setListLoaiTaiKhoan] = useState<string[]>([]);
-    const [initialValues, setInitialValues] = useState({
-        shtk: "",
-        tenTaiKhoan: "",
-        capTaiKhoan: '',
-        loaiTaiKhoan: "",
-        ghiChu: "",
+    const defaultValue = {
+        txtShtk: "",
+        txtTenTaiKhoan: "",
+        numCapTK: '',
+        txtLoaiTaiKhoan: "",
+        txtGhiChu: "",
         chkBATBUOC: false,
         chkCHITIET: false,
         chkVATTU: false,
@@ -33,9 +33,10 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
         chkPHONGBAN: false,
         chkHIENCCDC: false,
         chkCONGCU: false,
-    });
-    console.log('tk')
-
+    }
+    const [initialValues, setInitialValues] = useState(defaultValue);
+    const maOld = useRef(111);
+    const maNew = useRef(0);
     useEffect(() => {
         const getLoaiTaiKhoan = async () => {
             const response = await Api.get(`${import.meta.env.VITE_API_URL}/danhmuc/GetLoaiTaiKhoan`);
@@ -44,7 +45,6 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                 setListLoaiTaiKhoan(loaiTaiKhoanList);
             }
         }
-
         if (idItem !== 0) {
             const fetchData = async () => {
                 try {
@@ -53,87 +53,68 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                             TenBang: "DANHMUCTAIKHOAN",
                             MaSo: "SHTK",
                             iddoituong: idItem.toString(),
-                            madoituong: "111"
+                            madoituong: maOld.current
                         }
                     });
-
                     if (response.data && response.data.data.length > 0) {
                         const apiData = response.data.data[0]; // Lấy object đầu tiên từ mảng data
-                        const validCapTaiKhoan = [1, 2, 3, 4, 5, 6, 7].includes(apiData.CAPTK)
-                            ? apiData.CAPTK.toString()
-                            : "1";
-                        setInitialValues({
-                            shtk: apiData.SHTK || "",
-                            tenTaiKhoan: apiData.TENTAIKHOAN || "",
-                            capTaiKhoan: validCapTaiKhoan,
-                            loaiTaiKhoan: apiData.LOAITAIKHOAN || "",
-                            ghiChu: apiData.GHICHU || "",
-                            chkBATBUOC: apiData.BATBUOC || false,
-                            chkCHITIET: apiData.CHITIET || false,
-                            chkVATTU: apiData.VATTU || false,
-                            chkHOPDONG: apiData.HOPDONG || false,
-                            chkKHOANMUC: apiData.KHOANMUC || false,
-                            chkHDSXKD: apiData.HDSXKD || false,
-                            chkSODU2BEN: apiData.SODU2BEN || false,
-                            chkGIATHANH: apiData.GIATHANH || false,
-                            chkCONGTRINH: apiData.CONGTRINH || false,
-                            chkPHONGBAN: apiData.PHONGBAN || false,
-                            chkHIENCCDC: apiData.HIENCCDC || false,
-                            chkCONGCU: apiData.CONGCU || false,
-                        });
+                        // const validCapTaiKhoan = [1, 2, 3, 4, 5, 6, 7].includes(apiData.CAPTK)
+                        if (apiData) {
+                            const formattedData = Object.keys(initialValues).reduce((acc, key) => {
+                                const newKey = key.substring(3).toUpperCase();
+                                return {
+                                    ...acc,
+                                    [key]: apiData[newKey] ?? initialValues[key as keyof typeof defaultValue], // Nếu API không có dữ liệu thì giữ giá trị mặc định
+                                };
+                            }, {} as Record<string, any>);
+                            setInitialValues((prev) => ({
+                                ...prev,
+                                ...formattedData,
+                            }));
+
+                        }
                     }
                 } catch (error) {
                     console.error("Lỗi khi lấy dữ liệu:", error);
                 }
-                console.log(12003213)
             };
             fetchData(); // Gọi hàm async
         }
-        // console.log(123232323)
         getLoaiTaiKhoan();
-    }, [idItem]); // Chạy lại khi `idItem` thay đổi
-
+    }, [idItem]);
     const handleSubmit = async (values: any) => {
         try {
             const formatSQLInsert = (values: any) => {
-                if (idItem > 0)
-                    return `EDITOK***GHICHU=N'${values.ghiChu}',
-                        SHTK=N'${values.shtk}',
-                        TENTAIKHOAN=N'${values.tenTaiKhoan}',
-                        BATBUOC=${values.chkBATBUOC ? 1 : 0},
-                        CHITIET=${values.chkCHITIET ? 1 : 0},
-                        VATTU=${values.chkVATTU ? 1 : 0},
-                        HOPDONG=${values.chkHOPDONG ? 1 : 0},
-                        KHOANMUC=${values.chkKHOANMUC ? 1 : 0},
-                        HDSXKD=${values.chkHDSXKD ? 1 : 0},
-                        SODU2BEN=${values.chkSODU2BEN ? 1 : 0},
-                        GIATHANH=${values.chkGIATHANH ? 1 : 0},
-                        CONGTRINH=${values.chkCONGTRINH ? 1 : 0},
-                        PHONGBAN=${values.chkPHONGBAN ? 1 : 0},
-                        HIENCCDC=${values.chkHIENCCDC ? 1 : 0},
-                        CONGCU=${values.chkCONGCU ? 1 : 0},
-                        TENNGANHANG=NULL,
-                        SOTAIKHOAN=NULL,
-                        CAPTK=N'${values.capTaiKhoan}',
-                        LOAITAIKHOAN=N'${values.loaiTaiKhoan}'
-                        WHERE ID=${idItem}`;
-                return `ADDNEWOK***GHICHU, SHTK, TENTAIKHOAN, BATBUOC, CHITIET, VATTU, HOPDONG, KHOANMUC, HDSXKD, SODU2BEN, GIATHANH, CONGTRINH, PHONGBAN, HIENCCDC, CONGCU, TENNGANHANG, SOTAIKHOAN, CAPTK, LOAITAIKHOAN) VALUESOK***N'${values.ghiChu}',N'${values.shtk}',N'${values.tenTaiKhoan}',${values.chkBATBUOC ? 1 : 0}, ${values.chkCHITIET ? 1 : 0}, ${values.chkVATTU ? 1 : 0}, ${values.chkHOPDONG ? 1 : 0}, ${values.chkKHOANMUC ? 1 : 0}, ${values.chkHDSXKD ? 1 : 0}, ${values.chkSODU2BEN ? 1 : 0}, ${values.chkGIATHANH ? 1 : 0}, ${values.chkCONGTRINH ? 1 : 0}, ${values.chkPHONGBAN ? 1 : 0}, ${values.chkHIENCCDC ? 1 : 0}, ${values.chkCONGCU ? 1 : 0}, ${values.tenNganHang ? `N'${values.tenNganHang}'` : "NULL"}, ${values.soTaiKhoan ? `N'${values.soTaiKhoan}'` : "NULL"}, N'${values.capTaiKhoan}', N'${values.loaiTaiKhoan}')`;
+                const formattedValues = Object.entries(values).reduce((acc, [key, value]) => {
+                    const newKey = key.substring(3); // Bỏ 3 ký tự đầu (txt, num, chk)
+                    acc[newKey] = value;
+                    return acc;
+                }, {} as Record<string, any>);
+                const fields = Object.keys(formattedValues);
+                const valuesSQL = fields.map(field => {
+                    const val = formattedValues[field];
+                    if (typeof val === "boolean") return `${field}=${val ? 1 : 0}`; // Boolean -> 1 | 0
+                    if (val === null || val === undefined) return `${field}=NULL`; // NULL values
+                    return `${field}=N'${val}'`; // String & Number -> 'Value'
+                });
+                if (idItem != 0) {
+                    return `EDITOK*** ${valuesSQL.join(", ")} WHERE ID=${idItem}`;
+                }
+                return `ADDNEWOK*** ${fields.join(", ")}) VALUESOK***${valuesSQL.map(v => v.split("=")[1]).join(", ")})`;
             };
             const sqlQuery = formatSQLInsert(values);
-            console.log(sqlQuery);
             const response = await Api.post(
                 `${import.meta.env.VITE_API_URL}/danhmuc/SaveAddOrEditDanhMuc`,
-                null,  // Body phải là `null` vì dữ liệu gửi qua query
+                null, 
                 {
                     params: {
                         tbl: "DANHMUCTAIKHOAN",
-                        sqltxt: sqlQuery, // Đảm bảo giá trị hợp lệ
-                        masoOld: "1111",
-                        masoNew: "1111"
+                        sqltxt: sqlQuery,
+                        masoOld: maOld.current,
+                        masoNew: maNew.current
                     }
                 }
             );
-
             if (response.status == 200) {
                 if (response.data.success === false) {
                     showNotification('', response.data.message, 'warning')
@@ -142,35 +123,15 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                     else showNotification('', 'Thêm thành công', 'success')
                 }
             } else {
-                showNotification('', 'Đã xảy ra lỗi trong quá trình thêm mới', 'danger')
+                showNotification('', 'Đã xảy ra lỗi trong quá trình thực thi', 'danger')
             }
-
-
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
     const handleAddMore = (resetForm: () => void) => {
-        resetForm(); // Reset lại form về giá trị ban đầu
-        setInitialValues({
-            shtk: "",
-            tenTaiKhoan: "",
-            capTaiKhoan: '',
-            loaiTaiKhoan: "",
-            ghiChu: "",
-            chkBATBUOC: false,
-            chkCHITIET: false,
-            chkVATTU: false,
-            chkHOPDONG: false,
-            chkKHOANMUC: false,
-            chkHDSXKD: false,
-            chkSODU2BEN: false,
-            chkGIATHANH: false,
-            chkCONGTRINH: false,
-            chkPHONGBAN: false,
-            chkHIENCCDC: false,
-            chkCONGCU: false,
-        })
+        resetForm();
+        setInitialValues(defaultValue)
     };
 
     return (
@@ -182,31 +143,31 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
             {({ setFieldValue, values, handleChange, resetForm }) => (
                 <Form className="row g-4 w-100">
                     <div className="col-12">
-                        <FastField name="shtk">
+                        <FastField name="txtShtk">
                             {({ field }: any) => (
-                                <FormGroup id="shtk" label="SHTK" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
+                                <FormGroup id="txtShtk" label="SHTK" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
                                     <Input type="text" {...field} required />
                                 </FormGroup>
                             )}
                         </FastField>
                     </div>
                     <div className="col-12">
-                        <FastField name="tenTaiKhoan">
+                        <FastField name="txtTenTaiKhoan">
                             {({ field }: any) => (
-                                <FormGroup id="tenTaiKhoan" label="Tên tài khoản" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
+                                <FormGroup id="txtTenTaiKhoan" label="Tên tài khoản" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
                                     <Input type="text" {...field} />
                                 </FormGroup>
                             )}
                         </FastField>
                     </div>
                     <div className="col-12">
-                        <FormGroup id="capTaiKhoan" label="Cấp tài khoản" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
+                        <FormGroup id="numCapTK" label="Cấp tài khoản" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
                             <Select
                                 ariaLabel="Chọn cấp tài khoản"
-                                name="capTaiKhoan"
-                                value={values.capTaiKhoan} // Đã đảm bảo là string
+                                name="numCapTK"
+                                value={values.numCapTK} // Đã đảm bảo là string
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                    setFieldValue("capTaiKhoan", e.target.value);
+                                    setFieldValue("numCapTK", e.target.value);
                                 }}
                             >
                                 <option value="">-- Chọn cấp tài khoản --</option>
@@ -224,110 +185,122 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                             label="Quyền hạn"
                             labelClassName="col-sm-3 text-capitalize"
                             isColForLabel
-                            childWrapperClassName="col-sm-9">
-                            <ChecksGroup isInline>
-                                <Checks
-                                    type="checkbox"
-                                    id="chkBATBUOC"
-                                    label=" Sử dụng hạch toán"
-                                    name="chkBATBUOC"
-                                    onChange={handleChange}
-                                    checked={values.chkBATBUOC}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkCHITIET"
-                                    label="Theo đối tượng"
-                                    name="chkCHITIET"
-                                    onChange={handleChange}
-                                    checked={values.chkCHITIET}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkVATTU"
-                                    label="Theo vật tư"
-                                    name="chkVATTU"
-                                    onChange={handleChange}
-                                    checked={values.chkVATTU}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkHOPDONG"
-                                    label="Theo hợp đồng kinh tế"
-                                    name="chkHOPDONG"
-                                    onChange={handleChange}
-                                    checked={values.chkHOPDONG}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkKHOANMUC"
-                                    label="Theo khoản mục"
-                                    name="chkKHOANMUC"
-                                    onChange={handleChange}
-                                    checked={values.chkKHOANMUC}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkHDSXKD"
-                                    label="Theo hoạt động SXKD"
-                                    name="chkHDSXKD"
-                                    onChange={handleChange}
-                                    checked={values.chkHDSXKD}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkSODU2BEN"
-                                    label="Số dư để 2 vế Nợ, Có"
-                                    name="chkSODU2BEN"
-                                    onChange={handleChange}
-                                    checked={values.chkSODU2BEN}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkGIATHANH"
-                                    label="Theo sản phẩm"
-                                    name="chkGIATHANH"
-                                    onChange={handleChange}
-                                    checked={values.chkGIATHANH}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkCONGTRINH"
-                                    label="Theo công trình"
-                                    name="chkCONGTRINH"
-                                    onChange={handleChange}
-                                    checked={values.chkCONGTRINH}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkPHONGBAN"
-                                    label="Theo bộ phận, phòng ban"
-                                    name="chkPHONGBAN"
-                                    onChange={handleChange}
-                                    checked={values.chkPHONGBAN}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkHIENCCDC"
-                                    label="Theo CCDC, TSCĐ"
-                                    name="chkHIENCCDC"
-                                    onChange={handleChange}
-                                    checked={values.chkHIENCCDC}
-                                />
-                                <Checks
-                                    type="checkbox"
-                                    id="chkCONGCU"
-                                    label="Hiện bảng kê phân bổ CCDC, TSCĐ"
-                                    name="chkCONGCU"
-                                    onChange={handleChange}
-                                    checked={values.chkCONGCU}
-                                />
-                            </ChecksGroup>
+
+                            childWrapperClassName="col-sm-9"
+                        >
+                            <div className="d-flex justify-content-between">
+                                <div className="col-6">
+                                    <ChecksGroup>
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkBATBUOC"
+                                            label=" Sử dụng hạch toán"
+                                            name="chkBATBUOC"
+                                            onChange={handleChange}
+                                            checked={values.chkBATBUOC}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkCHITIET"
+                                            label="Theo đối tượng"
+                                            name="chkCHITIET"
+                                            onChange={handleChange}
+                                            checked={values.chkCHITIET}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkVATTU"
+                                            label="Theo vật tư"
+                                            name="chkVATTU"
+                                            onChange={handleChange}
+                                            checked={values.chkVATTU}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkHOPDONG"
+                                            label="Theo hợp đồng kinh tế"
+                                            name="chkHOPDONG"
+                                            onChange={handleChange}
+                                            checked={values.chkHOPDONG}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkKHOANMUC"
+                                            label="Theo khoản mục"
+                                            name="chkKHOANMUC"
+                                            onChange={handleChange}
+                                            checked={values.chkKHOANMUC}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkHDSXKD"
+                                            label="Theo hoạt động SXKD"
+                                            name="chkHDSXKD"
+                                            onChange={handleChange}
+                                            checked={values.chkHDSXKD}
+                                        />
+                                    </ChecksGroup>
+                                </div>
+                                <div className="col-6">
+                                    <ChecksGroup>
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkSODU2BEN"
+                                            label="Số dư để 2 vế Nợ, Có"
+                                            name="chkSODU2BEN"
+                                            onChange={handleChange}
+                                            checked={values.chkSODU2BEN}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkGIATHANH"
+                                            label="Theo sản phẩm"
+                                            name="chkGIATHANH"
+                                            onChange={handleChange}
+                                            checked={values.chkGIATHANH}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkCONGTRINH"
+                                            label="Theo công trình"
+                                            name="chkCONGTRINH"
+                                            onChange={handleChange}
+                                            checked={values.chkCONGTRINH}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkPHONGBAN"
+                                            label="Theo bộ phận, phòng ban"
+                                            name="chkPHONGBAN"
+                                            onChange={handleChange}
+                                            checked={values.chkPHONGBAN}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkHIENCCDC"
+                                            label="Theo CCDC, TSCĐ"
+                                            name="chkHIENCCDC"
+                                            onChange={handleChange}
+                                            checked={values.chkHIENCCDC}
+                                        />
+                                        <Checks
+                                            type="checkbox"
+                                            id="chkCONGCU"
+                                            label="Hiện bảng kê phân bổ CCDC, TSCĐ"
+                                            name="chkCONGCU"
+                                            onChange={handleChange}
+                                            checked={values.chkCONGCU}
+                                        />
+                                    </ChecksGroup>
+                                </div>
+                            </div>
+
+
                         </FormGroup>
                     </div>
                     <div className="col-12">
                         <FormGroup
-                            id="loaiTaiKhoan"
+                            id="txtLoaiTaiKhoan"
                             label="Loại tài khoản"
                             isColForLabel
                             labelClassName="col-sm-3 text-capitalize"
@@ -335,10 +308,10 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                         >
                             <Select
                                 ariaLabel="Chọn loại tài khoản"
-                                name="loaiTaiKhoan"
-                                value={values.loaiTaiKhoan}
+                                name="txtLoaiTaiKhoan"
+                                value={values.txtLoaiTaiKhoan}
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                    setFieldValue("loaiTaiKhoan", e.target.value);
+                                    setFieldValue("txtLoaiTaiKhoan", e.target.value);
                                 }}
                             >
                                 <option value="">-- Chọn loại tài khoản --</option>
@@ -351,9 +324,9 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                         </FormGroup>
                     </div>
                     <div className="col-12">
-                        <FastField name="ghiChu">
+                        <FastField name="txtGhiChu">
                             {({ field }: any) => (
-                                <FormGroup id="ghiChu" label="Ghi chú" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
+                                <FormGroup id="txtGhiChu" label="Ghi chú" isColForLabel labelClassName="col-sm-3 text-capitalize" childWrapperClassName="col-sm-9">
                                     <Textarea
                                         placeholder=''
                                         aria-label='.form-control-lg example'
@@ -364,7 +337,7 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                             )}
                         </FastField>
                     </div>
-                    <div className="col-12 d-flex justify-content-end gap-2">
+                    <div className="col-12 d-flex justify-content-end gap-2 mt-4">
                         <Button color="info" icon="Save" type="submit">
                             Cất giữ
                         </Button>
@@ -376,7 +349,7 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                             //isOutline
                             className='border'
                             onClick={() => setOpenModal(false)}
-                            >
+                        >
                             Đóng
                         </Button>
                     </div>

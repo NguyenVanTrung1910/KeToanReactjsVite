@@ -75,22 +75,21 @@ const AddAndEditModal: React.FC<ModelProps> = ({ nameButton, content, title, isO
                 <ModalBody>
                         {content}
                     </ModalBody>
-                <ModalFooter>
-                    {/* <Button color='info' icon='Save'>
+                {/* <ModalFooter>
+                    <Button color='info' icon='Save'>
                         Cất giữ
                     </Button>
                     <Button color='success' icon='Add' onClick={handleAddMore}>
                         Thêm tiếp
-                    </Button> */}
-                    {/* <Button
+                    </Button>
+                    <Button
                         color='danger'
                         //isOutline
                         className='border'
                         onClick={() => setIsOpen(false)}>
                         Đóng
-                    </Button> */}
-<div></div>
-                </ModalFooter>
+                    </Button>
+                </ModalFooter> */}
             </Modal>
         </>
 

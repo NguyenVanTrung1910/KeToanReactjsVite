@@ -5,10 +5,11 @@ import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 
 import Page from '../../../layout/Page/Page';
 import ThemeContext from '../../../contexts/themeContext';
-import DataGrid from '../../../components/table/DataGrid';
 import SubHeaderDM from '../SubHeaderDM';
 import AddAndEditModal from '../../../components/Modal/AddAndEditModal';
 import TaiKhoanForm from '../Form/TaiKhoanForm';
+import DataGrid from '../../../components/table/DataGrid';
+import NhomDoiTuongForm from '../Form/NhomDoiTuongForm';
 const NhomDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
@@ -24,26 +25,29 @@ const NhomDoiTuong = () => {
         }
         return () => { };
     }, []);
-    console.log('Nhom doi tuong')
-    console.log(idItemCurrent.current)
+    if (!isOpenModal)
+        idItemCurrent.current = 0
     return (
         // <KeepAlive>
         <PageWrapper title={demoPagesMenu.sales.subMenu.dashboard.text}>
-            <SubHeaderDM title1='Danh Mục' title2='Nhóm Đối Tượng' link1='' link2='/danhmuc/danhmuc?loai=danhmucnhomdonvi' />
-
+            <SubHeaderDM link1='' link2='/danhmuc/danhmuc/loai=danhmuctaikhoan' title1='Danh Mục' title2='Danh Mục Tài Khoản'
+                listButton={<AddAndEditModal
+                    nameButton='Thêm mới'
+                    title='Danh Mục Tài Khoản'
+                    content={<NhomDoiTuongForm idItem={idItemCurrent.current} setOpenModal={setIsOpenModal} />} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
+                    includeButton={true} />}
+            />
             <Page container='fluid'>
                 <div className='row'>
                     <div className='col-xxl-12'>
-                        <DataGrid
+                    <DataGrid 
                             apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmucnhomdonvi`}
-                            loai='danhmucnhomdonvi' idItemCurrent={idItemCurrent} setOpenModal={setIsOpenModal}/>
+                            loai='danhmucnhomdonvi'
+                            idItemCurrent={idItemCurrent} setOpenModal={setIsOpenModal} isOpenModal={isOpenModal}/>
                     </div>
 
                 </div>
-                <AddAndEditModal
-                    content={<TaiKhoanForm idItem={idItemCurrent} setOpenModal={setIsOpenModal}/>}
-                    includeButton={true} isOpen={isOpenModal} setIsOpen={setIsOpenModal} title='' nameButton='' />
             </Page>
 
         </PageWrapper>
