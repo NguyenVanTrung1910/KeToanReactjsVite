@@ -16,14 +16,15 @@ import AddAndEditModal from '../../../components/Modal/AddAndEditModal';
 import SubHeaderDM from '../SubHeaderDM';
 import { Store } from 'react-notifications-component';
 import showNotification from '../../../components/extras/showNotification';
-import DataGrid from '../../../components/table/DataGrid';
 import DanhMucDoiTuongForm from '../Form/DanhMucDoiTuongForm';
+import DataTable, { FunctionRef } from '../../../components/table/DataTable';
 
 const DanhMucDoiTuong = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
     const [isOpenModal, setIsOpenModal] = useState(false);
     const idItemCurrent = useRef(0);
+    const dataGridRef = useRef<FunctionRef | null>(null);
 
     useEffect(() => {
         if (localStorage.getItem('tourModalStarted') !== 'shown' && !mobileDesign) {
@@ -36,6 +37,7 @@ const DanhMucDoiTuong = () => {
     }, []);
     if (!isOpenModal)
         idItemCurrent.current = 0
+    
     return (
         // <KeepAlive>
         <PageWrapper title={demoPagesMenu.sales.subMenu.dashboard.text}>
@@ -43,17 +45,19 @@ const DanhMucDoiTuong = () => {
                 listButton={<AddAndEditModal
                     nameButton='Thêm mới'
                     title='Danh Mục Tài Khoản'
-                    content={<DanhMucDoiTuongForm idItem={idItemCurrent.current} setOpenModal={setIsOpenModal} />} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
+                    content={<DanhMucDoiTuongForm idItem={idItemCurrent.current} reloadGrid={dataGridRef.current?.reloadGrid} setOpenModal={setIsOpenModal} />} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
                     includeButton={true} />}
+                exportToExcel={dataGridRef.current?.exportToExcel}
+
             />
             <Page container='fluid'>
                 <div className='row'>
                     <div className='col-xxl-12'>
-                        <DataGrid
-                            apiUrlForAll={`${import.meta.env.VITE_API_URL}/danhmuc`}
+                        <DataTable
+                            url={`${import.meta.env.VITE_API_URL}/danhmuc`}
                             apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmuctendonvi`}
                             loai='danhmuctendonvi'
-                            idItemCurrent={idItemCurrent} setOpenModal={setIsOpenModal} isOpenModal={isOpenModal}
+                            idItemCurrent={idItemCurrent} setIsOpenModal={setIsOpenModal} keyField='ID'
                         />
                     </div>
 

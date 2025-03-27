@@ -10,10 +10,11 @@ import showNotification from "../../../components/extras/showNotification";
 import Button from "../../../components/bootstrap/Button";
 interface DanhMucDoiTuongFormProps {
     idItem: number, url?: string, setOpenModal: (status: boolean) => void;
+    reloadGrid?: () => void;
 
 }
 
-const DanhMucDoiTuongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, setOpenModal }) => {
+const DanhMucDoiTuongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, setOpenModal,reloadGrid }) => {
     const [listKhuVuc, setListKhuVuc] = useState<string[]>([]);
     const defaultValue = {
         cboTENNHOM: "",
@@ -132,6 +133,7 @@ const DanhMucDoiTuongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, 
                     if (idItem > 0) showNotification('', 'Sửa thành công', 'success')
                     else showNotification('', 'Thêm thành công', 'success')
                 }
+                (reloadGrid || (() => { }))();
             } else {
                 showNotification('', 'Đã xảy ra lỗi trong quá trình thực thi', 'danger')
             }

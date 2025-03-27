@@ -5,15 +5,16 @@ import SubHeader, {
 } from '../../layout/SubHeader/SubHeader';
 import Button, { ButtonGroup } from '../../components/bootstrap/Button';
 import Breadcrumb from '../../components/bootstrap/Breadcrumb';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 interface SubProps {
     title1: string;
     title2: string;
     link1: string;
     link2: string;
     listButton?: ReactNode;
+    exportToExcel?:()=>void;
 }
-const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1,listButton }) => {
+const SubHeaderDM: React.FC<SubProps> = React.memo(({ title1, title2, link2, link1, listButton, exportToExcel }) => {
     console.log('subheader')
     return (
         <SubHeader>
@@ -33,10 +34,10 @@ const SubHeaderDM: React.FC<SubProps> = ({ title1, title2, link2, link1,listButt
             </SubHeaderLeft>
             <SubHeaderRight>
                 {listButton}
-                <Button className='btn btn-outline-info border-transparent btn-hover-shadow-lg shadow-none'>Xuất Excel</Button>
+                <Button className='btn btn-outline-info border-transparent btn-hover-shadow-lg shadow-none' onClick={exportToExcel || (() => { })}>Xuất Excel</Button>
             </SubHeaderRight>
         </SubHeader>
     )
-}
+});
 
 export default SubHeaderDM

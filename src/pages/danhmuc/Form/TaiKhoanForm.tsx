@@ -10,10 +10,11 @@ import showNotification from "../../../components/extras/showNotification";
 import Button from "../../../components/bootstrap/Button";
 interface TaiKhoanFormProps {
     idItem: number, url?: string, setOpenModal: (status: boolean) => void;
+    reloadGrid?:()=>void;
 
 }
 
-const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }) => {
+const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal,reloadGrid }) => {
     const [listLoaiTaiKhoan, setListLoaiTaiKhoan] = useState<string[]>([]);
     const defaultValue = {
         txtShtk: "",
@@ -122,6 +123,7 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
                     if (idItem > 0) showNotification('', 'Sửa thành công', 'success')
                     else showNotification('', 'Thêm thành công', 'success')
                 }
+                (reloadGrid || (() => { }))();
             } else {
                 showNotification('', 'Đã xảy ra lỗi trong quá trình thực thi', 'danger')
             }
@@ -133,7 +135,7 @@ const TaiKhoanForm: React.FC<TaiKhoanFormProps> = ({ idItem, url, setOpenModal }
         resetForm();
         setInitialValues(defaultValue)
     };
-
+console.log("tk form")
     return (
         <Formik
             enableReinitialize
