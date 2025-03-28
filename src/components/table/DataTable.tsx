@@ -40,7 +40,7 @@ interface TitleColTable {
   TENTRUONG: string; TENCOT?: string; KIEUDULIEU?: string; LOOKUPURL?: string; FORMAT?: string, HIENTHI?: number,
 }
 const DataTable = React.memo(forwardRef<FunctionRef, CustomDataGridProps>(
-  ({ url, apiUrlGetTitle, keyField, pageSize = 100, displayCol, loai, setIsOpenModal, idItemCurrent }, ref) => {
+  ({ url, apiUrlGetTitle, keyField, pageSize = 10, displayCol, loai, setIsOpenModal, idItemCurrent }, ref) => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const gridRef = useRef<DataGrid>(null);
     const [filteredColumns, setFilteredColumns] = useState<JSX.Element[]>([]);
@@ -151,17 +151,18 @@ const DataTable = React.memo(forwardRef<FunctionRef, CustomDataGridProps>(
                         : undefined
                   }
                   format={col.FORMAT}
-                  cellRender={(cellData) =>
-                    col.KIEUDULIEU === "bool" ? (
-                      cellData.value ? (
-                        <span style={{ fontSize: "16px" }}>✓</span>
-                      ) : (
-                        <span></span>
-                      )
-                    ) : (
-                      <span>{cellData.value}</span>
-                    )
-                  }
+                  cellRender={(cellData) => {
+                    if (col.KIEUDULIEU === "bool") {
+                      return cellData.value ? <span style={{ fontSize: "16px" }}>✓</span> : <span></span>;
+                    }
+                  
+                    if (col.KIEUDULIEU === "date") {
+                      return <span>{cellData.value ? new Date(cellData.value).toLocaleDateString() : ""}</span>;
+                    }
+                  
+                    return <span>{cellData.value}</span>;
+                  }}
+                  
                 />
               );
             })

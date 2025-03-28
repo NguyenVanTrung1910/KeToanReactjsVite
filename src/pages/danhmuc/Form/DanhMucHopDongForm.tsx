@@ -14,7 +14,7 @@ interface DanhMucDoiTuongFormProps {
 
 }
 
-const DanhMucDoiTuongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, setOpenModal, reloadGrid }) => {
+const DanhMucHopDongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, setOpenModal, reloadGrid }) => {
     const [listKhuVuc, setListKhuVuc] = useState<string[]>([]);
     const [listPhongBan, setListPhongBan] = useState<string[]>([]);
     const [listQuanLy, setListQuanLy] = useState<string[]>([]);
@@ -389,4 +389,4 @@ const DanhMucDoiTuongForm: React.FC<DanhMucDoiTuongFormProps> = ({ idItem, url, 
         </Formik>
     );
 };
-export default DanhMucDoiTuongForm
+export default DanhMucHopDongForm

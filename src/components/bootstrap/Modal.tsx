@@ -141,6 +141,7 @@ const Modal: FC<IModalProps> = ({
 		// @ts-ignore
 		if (ref.current && !ref.current.contains(event.target) && !isStaticBackdrop) {
 			setIsOpen(false);
+			// return;
 		}
 	};
 	useEventListener('mousedown', closeModal);
@@ -208,9 +209,9 @@ const Modal: FC<IModalProps> = ({
 								<div className='modal-content'>{children}</div>
 							</div>
 						</motion.div>
-						<div
+						{/* <div
 							className={classNames('modal-backdrop', { fade: isAnimation }, 'show')}
-						/>
+						/> */}
 					</>
 				)}
 			</AnimatePresence>

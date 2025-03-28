@@ -39,6 +39,12 @@ const PAGE: Record<string, Record<string, React.LazyExoticComponent<any>>> = {
 		DANHMUCTENDONVI: lazy(() => import("../pages/danhmuc/DoiTuong/DanhMucDoiTuong")),
 		DANHMUCNHOMDONVI: lazy(() => import("../pages/danhmuc/DoiTuong/NhomDoiTuong")),
 		DANHMUCTAIKHOAN: lazy(() => import("../pages/danhmuc/TaiKhoan")),
+		DANHMUCNHOMKHUVUC: lazy(() => import("../pages/danhmuc/DoiTuong/NhomKhuVuc")),
+		DANHMUCKHUVUC: lazy(() => import("../pages/danhmuc/DoiTuong/DanhMucKhuVuc")),
+		DANHMUCPHONGBAN: lazy(() => import("../pages/danhmuc/DoiTuong/PhongBanBoPhan")),
+		DANHMUCHOATDONGSXKD: lazy(() => import("../pages/danhmuc/HoatDongSXKD")),
+		DANHMUCNHOMHOPDONG: lazy(() => import("../pages/danhmuc/NhomHopDong")),
+		DANHMUCHOPDONG: lazy(() => import("../pages/danhmuc/DanhMucHopDong")),
 	},
 	// PRESENTATION: {
 	// 	DASHBOARD: lazy(() => import("../pages/presentation/dashboard/DashboardPage")),

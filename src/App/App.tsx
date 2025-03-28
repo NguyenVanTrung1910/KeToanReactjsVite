@@ -17,7 +17,6 @@ import steps, { styles } from '../steps';
 import AsideRoutes from '../layout/Aside/AsideRoutes';
 import { ToastCloseButton } from '../components/bootstrap/Toasts';
 import { useAliveController } from "react-activation";
-import { AliveScope } from "react-activation";
 const useLimitedCache = (maxCacheSize = 5) => {
 	const { getCachingNodes, drop } = useAliveController();
 
@@ -92,10 +91,8 @@ const App = () => {
 						zIndex: fullScreenStatus ? 1 : undefined,
 						overflow: fullScreenStatus ? 'scroll' : undefined,
 					}}>
-					<AliveScope>
 						<AsideRoutes />
 						<Wrapper />
-					</AliveScope>
 				</div>
 				<Portal id='portal-notification'>
 					<ReactNotifications />

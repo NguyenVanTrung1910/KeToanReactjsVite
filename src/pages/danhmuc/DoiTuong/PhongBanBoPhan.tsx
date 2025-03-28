@@ -5,21 +5,14 @@ import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 
 import Page from '../../../layout/Page/Page';
 import ThemeContext from '../../../contexts/themeContext';
-import SubHeader, {
-    SubHeaderLeft,
-    SubHeaderRight,
-    SubheaderSeparator,
-} from '../../../layout/SubHeader/SubHeader';
-import Button, { ButtonGroup } from '../../../components/bootstrap/Button';
-import Breadcrumb from '../../../components/bootstrap/Breadcrumb';
 import AddAndEditModal from '../../../components/Modal/AddAndEditModal';
 import SubHeaderDM from '../SubHeaderDM';
-import { Store } from 'react-notifications-component';
-import showNotification from '../../../components/extras/showNotification';
-import DanhMucDoiTuongForm from '../Form/DanhMucDoiTuongForm';
-import DataTable, { FunctionRef } from '../../../components/table/DataTable';
 
-const DanhMucDoiTuong = () => {
+import DataTable, { FunctionRef } from '../../../components/table/DataTable';
+import NhomKhuVucForm from '../Form/NhomKhuVucForm';
+import PhongBanBoPhanForm from '../Form/PhongBanBoPhanForm';
+
+const PhongBanBoPhan = () => {
     const { mobileDesign } = useContext(ThemeContext);
     const { setIsOpen } = useTour();
     const [isOpenModal, setIsOpenModal] = useState(false);
@@ -41,11 +34,11 @@ const DanhMucDoiTuong = () => {
     return (
         // <KeepAlive>
         <PageWrapper title={demoPagesMenu.sales.subMenu.dashboard.text}>
-            <SubHeaderDM link1='' link2='/danhmuc/danhmuc/loai=danhmuctendonvi' title1='Danh Mục' title2='Danh Mục Tài Khoản'
+            <SubHeaderDM link1='' link2='/danhmuc/danhmuc/loai=DANHMUCPHONGBAN' title1='Danh Mục' title2='Danh Mục Phòng Ban, Bộ Phận'
                 listButton={<AddAndEditModal
                     nameButton='Thêm mới'
-                    title='Danh Mục Tài Khoản'
-                    content={<DanhMucDoiTuongForm idItem={idItemCurrent.current} reloadGrid={dataGridRef.current?.reloadGrid} setOpenModal={setIsOpenModal} />} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
+                    title='Danh Mục Phòng Ban, Bộ Phận'
+                    content={<PhongBanBoPhanForm idItem={idItemCurrent.current} reloadGrid={dataGridRef.current?.reloadGrid} setOpenModal={setIsOpenModal} />} isOpen={isOpenModal} setIsOpen={setIsOpenModal}
                     includeButton={true} />}
                 exportToExcel={dataGridRef.current?.exportToExcel}
 
@@ -55,8 +48,8 @@ const DanhMucDoiTuong = () => {
                     <div className='col-xxl-12'>
                         <DataTable
                             url={`${import.meta.env.VITE_API_URL}/danhmuc`}
-                            apiUrlGetTitle={`/danhmuc/danhmuc?loai=danhmuctendonvi`}
-                            loai='danhmuctendonvi'
+                            apiUrlGetTitle={`/danhmuc/danhmuc?loai=DANHMUCPHONGBAN`}
+                            loai='DANHMUCPHONGBAN'
                             idItemCurrent={idItemCurrent} setIsOpenModal={setIsOpenModal} keyField='ID'
                             ref={dataGridRef}
 
@@ -71,4 +64,4 @@ const DanhMucDoiTuong = () => {
     );
 };
 
-export default DanhMucDoiTuong;
+export default PhongBanBoPhan;

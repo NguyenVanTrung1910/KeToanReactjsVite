@@ -7,16 +7,21 @@ import App from './App/App';
 import reportWebVitals from './reportWebVitals';
 import { ThemeContextProvider } from './contexts/themeContext';
 import { AuthContextProvider } from './contexts/authContext';
+import { AliveScope } from "react-activation";
 import './i18n';
 
 const children = (
 	<AuthContextProvider>
 		<ThemeContextProvider>
-			<Router>
-				<React.StrictMode>
-					<App />
-				</React.StrictMode>
-			</Router>
+			<AliveScope>
+
+				<Router>
+					<React.StrictMode>
+						<App />
+					</React.StrictMode>
+				</Router>
+			</AliveScope>
+
 		</ThemeContextProvider>
 	</AuthContextProvider>
 );
